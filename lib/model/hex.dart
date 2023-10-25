@@ -24,7 +24,9 @@ class Hex {
 
   Hex.fromId(String id) : cube = _createCube(id);
 
-  String get id => _createId(cube);
+  String? _id;
+
+  String get id => (_id ??= _createId(cube));
 
   Offset toOffset([GridLayout gridClass = GridLayout.oddR]) {
     return cube.toOffset(gridClass);

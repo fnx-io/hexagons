@@ -73,12 +73,15 @@ void main() {
       var items = d.neighbors().toList();
       items.add(d);
       items.forEach((n) {
-        String id = n.id;
-        expect(id, isNotNull);
-        expect(id, isNotEmpty);
-        expect(id, equals(n.id));
-        Hex h = Hex.fromId(id);
-        expect(h, equals(n));
+        for (int a = 0; a < 2; a++) {
+          // internal caching?
+          String id = n.id;
+          expect(id, isNotNull);
+          expect(id, isNotEmpty);
+          expect(id, equals(n.id));
+          Hex h = Hex.fromId(id);
+          expect(h, equals(n));
+        }
       });
     });
     test('offset', () {
