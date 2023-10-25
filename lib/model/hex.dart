@@ -22,6 +22,10 @@ class Hex {
 
   Hex.fromOffset(Offset offset, [GridClass gridClass = GridClass.oddR]) : cube = offset.toCube(gridClass);
 
+  Hex.fromId(String id) : cube = _createCube(id);
+
+  String get id => _createId(cube);
+
   Offset toOffset([GridClass gridClass = GridClass.oddR]) {
     return cube.toOffset(gridClass);
   }
@@ -66,6 +70,33 @@ class Hex {
       }
     }
     return results;
+  }
+
+  List<Hex> spiral(int radius) {
+    var results = <Hex>[];
+    for (var i = 0; i <= radius; i++) {
+      results.addAll(ring(i));
+    }
+    return results;
+  }
+
+  Hex randomHexInArea(int radius) {
+    var all = spiral(radius);
+    return all[_r.nextInt(all.length)];
+  }
+
+  List<Hex> randomShape(int hexCount) {
+    assert(hexCount > 0);
+    List<Hex> result = [];
+    result.add(this);
+    while (result.length < hexCount) {
+      var hex = result[_r.nextInt(result.length)];
+      var neighbor = hex.randomNeighbor();
+      if (!result.contains(neighbor)) {
+        result.add(neighbor);
+      }
+    }
+    return result;
   }
 
   List<Hex>? pathTo(Hex to, MoveCost costFunction) {

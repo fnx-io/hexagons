@@ -24,11 +24,34 @@ void main() {
       ];
       var d = Cube(12, -7, -5);
       for (var i in testSets) {
-        print("Testing $i");
+        // print("Testing $i");
         expect(cubeDistance(i.a.cube, i.b.cube), equals(i.r), reason: "cubeDistance(${i.a.cube}, ${i.b.cube}) != ${i.r}");
         expect(cubeDistance(i.a.cube + d, i.b.cube + d), equals(i.r), reason: "cubeDistance(${i.a.cube + d}, ${i.b.cube + d}) != ${i.r}");
         expect(i.a.distanceTo(i.b), equals(i.r), reason: "${i.a}.distanceTo(${i.b}) != ${i.r}");
       }
+    });
+    test('distance', () {
+      var d = Hex(12, -7, -5);
+      var nbrs = d.neighbors();
+      expect(nbrs.length, equals(6));
+      expect({...nbrs}.length, equals(6));
+      nbrs.forEach((n) {
+        expect(d.distanceTo(n), equals(1), reason: "cubeDistance($d, $n) != 1");
+      });
+    });
+    test('id', () {
+      var d = Hex(12, -7, -5);
+      var items = d.neighbors().toList();
+      items.add(d);
+      items.forEach((n) {
+        String id = n.id;
+        print(id);
+        expect(id, isNotNull);
+        expect(id, isNotEmpty);
+        expect(id, equals(n.id));
+        Hex h = Hex.fromId(id);
+        expect(h, equals(n));
+      });
     });
   });
 }
