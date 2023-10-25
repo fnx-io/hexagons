@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'package:hexagons/hexagons.dart';
+import 'package:hex_toolkit/hex_toolkit.dart';
 import 'package:test/test.dart';
 
 void main() {

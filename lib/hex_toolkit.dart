@@ -1,4 +1,4 @@
-library hexagons;
+library hex_toolkit;
 
 import 'dart:math';
 

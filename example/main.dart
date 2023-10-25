@@ -1,4 +1,4 @@
-import 'package:hexagons/hexagons.dart';
+import 'package:hex_toolkit/hex_toolkit.dart';
 
 void main() {
   var hexA = Hex.zero();

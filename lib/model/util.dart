@@ -1,4 +1,4 @@
-part of hexagons;
+part of hex_toolkit;
 
 const sqrt3 = 1.73205080757;
 

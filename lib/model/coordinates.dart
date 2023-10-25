@@ -1,4 +1,4 @@
-part of hexagons;
+part of hex_toolkit;
 
 /// Two possible layouts of a hexagonal grid, which are used to convert between cube and offset coordinates, or when actually drawing the grid.
 /// In https://www.redblobgames.com/grids/hexagons/ these are called "odd-r" (pointy) and "odd-q" (flat).

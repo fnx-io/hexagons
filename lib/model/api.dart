@@ -1,4 +1,4 @@
-part of hexagons;
+part of hex_toolkit;
 
 /// This function describes the cost of moving from one hex to another. Both hexes are adjacent.
 /// The cost is a double value, where double.infinity means that the move is impossible (target hex is a wall).

@@ -5,7 +5,7 @@ Zero dependencies. Framework agnostic. Use with Flutter, on Web, CLI, or anywher
 
 Example:
 ```dart
-import 'package:hexagons/hexagons.dart';
+import 'package:hex_toolkit/hex_toolkit.dart';
 
 void main() {
   var hexA = Hex.zero();

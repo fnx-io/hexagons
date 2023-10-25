@@ -1,4 +1,4 @@
-part of hexagons;
+part of hex_toolkit;
 
 /// Djikstra's algorithm for finding shortest path between two hexes.
 List<Hex>? findShortestPath(Hex from, Hex to, MoveCost costFunction, int maximumDistanceTo) {

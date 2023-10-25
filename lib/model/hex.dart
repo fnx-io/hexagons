@@ -1,4 +1,4 @@
-part of hexagons;
+part of hex_toolkit;
 
 // All my neighbors
 var _directions = [

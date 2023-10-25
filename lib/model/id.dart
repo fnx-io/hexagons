@@ -1,8 +1,4 @@
-part of hexagons;
-
-const int _minValue = -2 ^ 29;
-const int _maxValue = 2 ^ 29;
-const int _shiftAmount = 32;
+part of hex_toolkit;
 
 /// Creates unique ID for a cube
 String _createCubeId(Cube c) {
