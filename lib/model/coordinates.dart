@@ -13,25 +13,25 @@ class Offset {
 
   Offset(this.q, this.r);
 
-  Cube toCube([GridLayout gridClass = GridLayout.oddR]) {
-    if (gridClass == GridLayout.oddR) {
+  Cube toCube([GridLayout gridLayout = GridLayout.oddR]) {
+    if (gridLayout == GridLayout.oddR) {
       var cq = q - (r - (r & 1)) ~/ 2;
       var cr = r;
       return Cube(cq, cr, -cq - cr);
-    } else if (gridClass == GridLayout.evenR) {
+    } else if (gridLayout == GridLayout.evenR) {
       var cq = q - (r + (r & 1)) ~/ 2;
       var cr = r;
       return Cube(cq, cr, -cq - cr);
-    } else if (gridClass == GridLayout.oddQ) {
+    } else if (gridLayout == GridLayout.oddQ) {
       var cq = q;
       var cr = r - (q - (q & 1)) ~/ 2;
       return Cube(cq, cr, -cq - cr);
-    } else if (gridClass == GridLayout.evenQ) {
+    } else if (gridLayout == GridLayout.evenQ) {
       var cq = q;
       var cr = r - (q + (q & 1)) ~/ 2;
       return Cube(cq, cr, -cq - cr);
     } else
-      throw ArgumentError('Invalid grid class: $gridClass');
+      throw ArgumentError('Invalid grid class: $gridLayout');
   }
 
   @override
@@ -58,25 +58,25 @@ class Cube {
 
   Cube.axial(int q, int r) : this(q, r, -q - r);
 
-  Offset toOffset([GridLayout gridClass = GridLayout.oddR]) {
-    if (gridClass == GridLayout.oddR) {
+  Offset toOffset([GridLayout gridLayout = GridLayout.oddR]) {
+    if (gridLayout == GridLayout.oddR) {
       var col = q + (r - (r & 1)) ~/ 2;
       var row = r;
       return Offset(col, row);
-    } else if (gridClass == GridLayout.evenR) {
+    } else if (gridLayout == GridLayout.evenR) {
       var col = q + (r + (r & 1)) ~/ 2;
       var row = r;
       return Offset(col, row);
-    } else if (gridClass == GridLayout.oddQ) {
+    } else if (gridLayout == GridLayout.oddQ) {
       var col = q;
       var row = r + (q - (q & 1)) ~/ 2;
       return Offset(col, row);
-    } else if (gridClass == GridLayout.evenQ) {
+    } else if (gridLayout == GridLayout.evenQ) {
       var col = q;
       var row = r + (q + (q & 1)) ~/ 2;
       return Offset(col, row);
     } else
-      throw ArgumentError('Invalid grid class: $gridClass');
+      throw ArgumentError('Invalid grid class: $gridLayout');
   }
 
   Cube operator +(Cube delta) {

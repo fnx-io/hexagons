@@ -20,7 +20,7 @@ class Hex {
 
   Hex.zero() : cube = Cube(0, 0, 0);
 
-  Hex.fromOffset(Offset offset, [GridLayout gridClass = GridLayout.oddR]) : cube = offset.toCube(gridClass);
+  Hex.fromOffset(Offset offset, [GridLayout gridLayout = GridLayout.oddR]) : cube = offset.toCube(gridLayout);
 
   Hex.fromId(String id) : cube = _createCubeFromId(id);
 
@@ -28,8 +28,8 @@ class Hex {
 
   String get id => (_id ??= _createCubeId(cube));
 
-  Offset toOffset([GridLayout gridClass = GridLayout.oddR]) {
-    return cube.toOffset(gridClass);
+  Offset toOffset([GridLayout gridLayout = GridLayout.oddR]) {
+    return cube.toOffset(gridLayout);
   }
 
   Cube _cubeDirection(int direction) {
