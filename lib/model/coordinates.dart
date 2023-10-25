@@ -56,7 +56,7 @@ class Cube {
     assert(q + r + s == 0);
   }
 
-  Cube.axial(int q, int r) : this(q, r, -q - r);
+  Cube.fromAxial(int q, int r) : this(q, r, -q - r);
 
   Offset toOffset([GridLayout gridLayout = GridLayout.oddR]) {
     if (gridLayout == GridLayout.oddR) {
