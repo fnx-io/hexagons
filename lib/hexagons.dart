@@ -6,4 +6,5 @@ part 'model/api.dart';
 part 'model/coordinates.dart';
 part 'model/hex.dart';
 part 'model/id.dart';
+part 'model/path.dart';
 part 'model/util.dart';

@@ -20,13 +20,13 @@ class Hex {
 
   Hex.zero() : cube = Cube(0, 0, 0);
 
-  Hex.fromOffset(Offset offset, [GridClass gridClass = GridClass.oddR]) : cube = offset.toCube(gridClass);
+  Hex.fromOffset(Offset offset, [GridLayout gridClass = GridLayout.oddR]) : cube = offset.toCube(gridClass);
 
   Hex.fromId(String id) : cube = _createCube(id);
 
   String get id => _createId(cube);
 
-  Offset toOffset([GridClass gridClass = GridClass.oddR]) {
+  Offset toOffset([GridLayout gridClass = GridLayout.oddR]) {
     return cube.toOffset(gridClass);
   }
 
@@ -99,45 +99,9 @@ class Hex {
     return result;
   }
 
-  List<Hex>? pathTo(Hex to, MoveCost costFunction) {
-    if (to == this) return [this];
-    if (cubeDistance(cube, to.cube) == 1) {
-      if (costFunction(this, to) == double.infinity) return null;
-      return [this, to];
-    }
-
-    var frontier = <_PathTodo>[];
-    frontier.insert(0, _PathTodo(0, cube));
-    var cameFrom = <Cube, Cube?>{};
-    var costSoFar = <Cube, double>{};
-    cameFrom[cube] = null;
-    costSoFar[cube] = 0;
-
-    while (frontier.isNotEmpty) {
-      frontier.sort();
-      var current = _toHex(frontier.removeAt(0).cube);
-      if (current == to) break;
-
-      for (var next in current.neighbors()) {
-        var newCost = costSoFar[current.cube]! + costFunction(current, next);
-        if (!costSoFar.containsKey(next) || newCost < (costSoFar[next] ?? double.infinity)) {
-          costSoFar[next.cube] = newCost;
-          var priority = cubeDistance(to.cube, next.cube).toDouble();
-          frontier.add(_PathTodo(priority, next.cube));
-          cameFrom[next.cube] = current.cube;
-        }
-      }
-    }
-
-    var path = <Hex>[];
-    var current = to;
-    while (current != this) {
-      path.add(current);
-      current = _toHex(cameFrom[current.cube]!);
-    }
-    path.add(this);
-    path = path.reversed.toList();
-    return path;
+  List<Hex>? pathTo(Hex to, MoveCost costFunction, {int? maximumDistanceFromTo}) {
+    maximumDistanceFromTo ??= distanceTo(to) * 2;
+    return findShortestPath(this, to, costFunction, maximumDistanceFromTo);
   }
 
   @override
@@ -151,8 +115,8 @@ class Hex {
 
 class _PathTodo implements Comparable<_PathTodo> {
   double priority;
-  Cube cube;
-  _PathTodo(this.priority, this.cube);
+  Hex hex;
+  _PathTodo(this.priority, this.hex);
 
   @override
   int compareTo(_PathTodo other) {

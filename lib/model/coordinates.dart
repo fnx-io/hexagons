@@ -1,6 +1,6 @@
 part of hexagons;
 
-enum GridClass {
+enum GridLayout {
   oddR,
   evenR,
   oddQ,
@@ -13,25 +13,37 @@ class Offset {
 
   Offset(this.q, this.r);
 
-  Cube toCube([GridClass gridClass = GridClass.oddR]) {
-    if (gridClass == GridClass.oddR) {
+  Cube toCube([GridLayout gridClass = GridLayout.oddR]) {
+    if (gridClass == GridLayout.oddR) {
       var cq = q - (r - (r & 1)) ~/ 2;
       var cr = r;
       return Cube(cq, cr, -cq - cr);
-    } else if (gridClass == GridClass.evenR) {
+    } else if (gridClass == GridLayout.evenR) {
       var cq = q - (r + (r & 1)) ~/ 2;
       var cr = r;
       return Cube(cq, cr, -cq - cr);
-    } else if (gridClass == GridClass.oddQ) {
+    } else if (gridClass == GridLayout.oddQ) {
       var cq = q;
       var cr = r - (q - (q & 1)) ~/ 2;
       return Cube(cq, cr, -cq - cr);
-    } else if (gridClass == GridClass.evenQ) {
+    } else if (gridClass == GridLayout.evenQ) {
       var cq = q;
       var cr = r - (q + (q & 1)) ~/ 2;
       return Cube(cq, cr, -cq - cr);
     } else
       throw ArgumentError('Invalid grid class: $gridClass');
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) || other is Offset && runtimeType == other.runtimeType && q == other.q && r == other.r;
+
+  @override
+  int get hashCode => q.hashCode ^ r.hashCode;
+
+  @override
+  String toString() {
+    return 'Offset{q: $q, r: $r}';
   }
 }
 
@@ -46,20 +58,20 @@ class Cube {
 
   Cube.axial(int q, int r) : this(q, r, -q - r);
 
-  Offset toOffset([GridClass gridClass = GridClass.oddR]) {
-    if (gridClass == GridClass.oddR) {
+  Offset toOffset([GridLayout gridClass = GridLayout.oddR]) {
+    if (gridClass == GridLayout.oddR) {
       var col = q + (r - (r & 1)) ~/ 2;
       var row = r;
       return Offset(col, row);
-    } else if (gridClass == GridClass.evenR) {
+    } else if (gridClass == GridLayout.evenR) {
       var col = q + (r + (r & 1)) ~/ 2;
       var row = r;
       return Offset(col, row);
-    } else if (gridClass == GridClass.oddQ) {
+    } else if (gridClass == GridLayout.oddQ) {
       var col = q;
       var row = r + (q - (q & 1)) ~/ 2;
       return Offset(col, row);
-    } else if (gridClass == GridClass.evenQ) {
+    } else if (gridClass == GridLayout.evenQ) {
       var col = q;
       var row = r + (q + (q & 1)) ~/ 2;
       return Offset(col, row);

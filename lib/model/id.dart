@@ -1,13 +1,9 @@
 part of hexagons;
 
-// Konstanty pro validaci rozsahu
-const int _minValue = -2147483648 ~/ 2; // -2^31
-const int _maxValue = 2147483647 ~/ 2; // 2^31 - 1
-
-// Konstanta pro posunutí bitů
+const int _minValue = -2 ^ 29;
+const int _maxValue = 2 ^ 29;
 const int _shiftAmount = 32;
 
-// Funkce pro vytvoření unikátního identifikátoru z dvou celých čísel
 String _createId(Cube c) {
   if (c.q < _minValue || c.q > _maxValue || c.r < _minValue || c.r > _maxValue) {
     throw ArgumentError("Coordinates must be limited from $_minValue to $_maxValue.");
@@ -16,7 +12,6 @@ String _createId(Cube c) {
   return combined.toRadixString(32);
 }
 
-// Funkce pro získání původních dvou čísel z unikátního identifikátoru
 Cube _createCube(String identifier) {
   int combined = int.parse(identifier, radix: 32);
   int q = _revert(combined >> _shiftAmount);
