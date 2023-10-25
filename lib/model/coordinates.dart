@@ -1,35 +1,39 @@
 part of hexagons;
 
+/// Two possible layouts of a hexagonal grid, which are used to convert between cube and offset coordinates, or when actually drawing the grid.
+/// In https://www.redblobgames.com/grids/hexagons/ these are called "odd-r" (pointy) and "odd-q" (flat).
 enum GridLayout {
-  oddR,
-  evenR,
-  oddQ,
-  evenQ,
+  POINTY_TOP,
+  FLAT_TOP,
 }
 
+/// Rather impractical representation of a hexagon in a hexagonal grid, positioned by [q] (column) and [r] (row) coordinates.
+/// "Zero" hexagon is in the top left corner. Odd rows (columns) are shifted to the right (down).
+/// See https://www.redblobgames.com/grids/hexagons/#coordinates for more information.
 class Offset {
   final int q;
   final int r;
 
   Offset(this.q, this.r);
 
-  Cube toCube([GridLayout gridLayout = GridLayout.oddR]) {
-    if (gridLayout == GridLayout.oddR) {
+  /// Converts this offset to a [Cube] coordinate, using the given [GridLayout].
+  Cube toCube([GridLayout gridLayout = GridLayout.POINTY_TOP]) {
+    if (gridLayout == GridLayout.POINTY_TOP) {
       var cq = q - (r - (r & 1)) ~/ 2;
       var cr = r;
       return Cube(cq, cr, -cq - cr);
-    } else if (gridLayout == GridLayout.evenR) {
-      var cq = q - (r + (r & 1)) ~/ 2;
-      var cr = r;
-      return Cube(cq, cr, -cq - cr);
-    } else if (gridLayout == GridLayout.oddQ) {
+      // } else if (gridLayout == GridLayout.evenR) {
+      //   var cq = q - (r + (r & 1)) ~/ 2;
+      //   var cr = r;
+      //   return Cube(cq, cr, -cq - cr);
+    } else if (gridLayout == GridLayout.FLAT_TOP) {
       var cq = q;
       var cr = r - (q - (q & 1)) ~/ 2;
       return Cube(cq, cr, -cq - cr);
-    } else if (gridLayout == GridLayout.evenQ) {
-      var cq = q;
-      var cr = r - (q + (q & 1)) ~/ 2;
-      return Cube(cq, cr, -cq - cr);
+      // } else if (gridLayout == GridLayout.evenQ) {
+      //   var cq = q;
+      //   var cr = r - (q + (q & 1)) ~/ 2;
+      //   return Cube(cq, cr, -cq - cr);
     } else
       throw ArgumentError('Invalid grid class: $gridLayout');
   }
@@ -47,6 +51,8 @@ class Offset {
   }
 }
 
+/// Smart representation of a hexagon in a hexagonal grid, positioned on three axis. Very practical for a lots of algorithms. Sum of these coordinates is always 0, so technically only [q] and [r] are actually necessary (these are called axial coordinates, see [Cube.fromAxial])).
+/// See https://www.redblobgames.com/grids/hexagons/#coordinates for more information.
 class Cube {
   final int q;
   final int r;
@@ -58,23 +64,24 @@ class Cube {
 
   Cube.fromAxial(int q, int r) : this(q, r, -q - r);
 
-  Offset toOffset([GridLayout gridLayout = GridLayout.oddR]) {
-    if (gridLayout == GridLayout.oddR) {
+  /// Converts this cube to an [Offset] coordinate, using the given [GridLayout].
+  Offset toOffset([GridLayout gridLayout = GridLayout.POINTY_TOP]) {
+    if (gridLayout == GridLayout.POINTY_TOP) {
       var col = q + (r - (r & 1)) ~/ 2;
       var row = r;
       return Offset(col, row);
-    } else if (gridLayout == GridLayout.evenR) {
-      var col = q + (r + (r & 1)) ~/ 2;
-      var row = r;
-      return Offset(col, row);
-    } else if (gridLayout == GridLayout.oddQ) {
+      // } else if (gridLayout == GridLayout.evenR) {
+      //   var col = q + (r + (r & 1)) ~/ 2;
+      //   var row = r;
+      //   return Offset(col, row);
+    } else if (gridLayout == GridLayout.FLAT_TOP) {
       var col = q;
       var row = r + (q - (q & 1)) ~/ 2;
       return Offset(col, row);
-    } else if (gridLayout == GridLayout.evenQ) {
-      var col = q;
-      var row = r + (q + (q & 1)) ~/ 2;
-      return Offset(col, row);
+      // } else if (gridLayout == GridLayout.evenQ) {
+      //   var col = q;
+      //   var row = r + (q + (q & 1)) ~/ 2;
+      //   return Offset(col, row);
     } else
       throw ArgumentError('Invalid grid class: $gridLayout');
   }

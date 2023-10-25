@@ -1,5 +1,6 @@
 part of hexagons;
 
+/// Djikstra's algorithm for finding shortest path between two hexes.
 List<Hex>? findShortestPath(Hex from, Hex to, MoveCost costFunction, int maximumDistanceTo) {
   Map<Hex, double> dist = {};
   Map<Hex, int> distanceTo = {};

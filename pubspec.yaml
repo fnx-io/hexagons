@@ -1,7 +1,7 @@
 name: hexagons
-description: A sample command-line application.
-version: 1.0.0
-# homepage: https://www.example.com
+description: Zero dependencies + framework agnostic Hex grid toolkit. Use with Flutter, on Web, on CLI, or anywhere Dart runs.
+version: 0.2.0
+homepage: https://github.com/fnx-io/hexagons
 
 environment:
   sdk: '>=2.16.0 <3.0.0'

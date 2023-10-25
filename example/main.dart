@@ -1,10 +1,3 @@
-Utilities for working with hexagons on a hexagonal grid.
-Based on magnificent https://www.redblobgames.com/grids/hexagons/ article.
-
-Zero dependencies. Framework agnostic. Use with Flutter, on Web, CLI, or anywhere Dart runs.
-
-Example:
-```dart
 import 'package:hexagons/hexagons.dart';
 
 void main() {
@@ -28,4 +21,3 @@ void main() {
   // hexA.randomNeighbor();
   // hexA.randomNeighborWhere(filter);
 }
-```

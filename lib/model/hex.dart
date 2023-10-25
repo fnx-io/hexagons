@@ -14,7 +14,7 @@ Hex _toHex(Cube cube) => Hex.fromCube(cube);
 
 /// An unmodifiable abstraction of a hexagon in a hexagonal grid.
 ///
-/// Offers several useful methods to measure distance, find path etc. Position of the hexagon is defined by a [Cube] coordinate.
+/// Offers several useful methods to measure distance, find path etc. Position of the hexagon is defined by a [Cube] coordinates.
 class Hex {
   /// Coordinate of the hexagon in a hexagonal grid.
   final Cube cube;
@@ -32,7 +32,7 @@ class Hex {
   Hex.zero() : cube = Cube(0, 0, 0);
 
   /// Creates hexagon from a given [Offset] coordinates, using the given [GridLayout].
-  Hex.fromOffset(Offset offset, [GridLayout gridLayout = GridLayout.oddR]) : cube = offset.toCube(gridLayout);
+  Hex.fromOffset(Offset offset, [GridLayout gridLayout = GridLayout.POINTY_TOP]) : cube = offset.toCube(gridLayout);
 
   /// Creates hexagon from a given [id].
   Hex.fromId(String id) : cube = _createCubeFromId(id);
@@ -44,7 +44,7 @@ class Hex {
   String get id => (_id ??= _createCubeId(cube));
 
   /// Creates [Offset] coordinates from this hexagon, using the given [GridLayout].
-  Offset toOffset([GridLayout gridLayout = GridLayout.oddR]) {
+  Offset toOffset([GridLayout gridLayout = GridLayout.POINTY_TOP]) {
     return cube.toOffset(gridLayout);
   }
 
@@ -109,6 +109,8 @@ class Hex {
     return all[_r.nextInt(all.length)];
   }
 
+  /// Generates random shape. The shape is a list of randomly chosen (but connected) hexes, with [hexCount] members,
+  /// one of these hexes is 'this'. There is no guarantee of position of 'this' within the shape.
   List<Hex> randomShape(int hexCount) {
     assert(hexCount > 0);
     List<Hex> result = [];
@@ -123,8 +125,15 @@ class Hex {
     return result;
   }
 
-  List<Hex>? pathTo(Hex to, MoveCost costFunction, {int? maximumDistanceFromTo}) {
-    maximumDistanceFromTo ??= distanceTo(to) * 2;
+  /// Computes the shortest path to other hex. The path is a list of connected hexes, including 'this' and [to]. If there is no path,
+  /// method returns null. The path is computed using the given [costFunction], which is a function that returns the cost of
+  /// transition from one hex to another. See [MoveCost]. Default [costFunction] assigns value 1 to any transition.
+  /// The grid searched is limited by a circle with radius [maximumDistanceFromTo] and
+  /// center in [to]. Default value of [maximumDistanceFromTo] is arbitrary value of `2 * this.distanceTo(to) + 10`.
+  ///
+  List<Hex>? pathTo(Hex to, {MoveCost? costFunction, int? maximumDistanceFromTo}) {
+    maximumDistanceFromTo ??= distanceTo(to) * 2 + 10;
+    costFunction ??= (from, to) => 1;
     return findShortestPath(this, to, costFunction, maximumDistanceFromTo);
   }
 
@@ -141,15 +150,4 @@ class Hex {
 
   /// Convenient method to deserialize hex from string (uses [Hex.fromId])
   static Hex deserialize(String id) => Hex.fromId(id);
-}
-
-class _PathTodo implements Comparable<_PathTodo> {
-  double priority;
-  Hex hex;
-  _PathTodo(this.priority, this.hex);
-
-  @override
-  int compareTo(_PathTodo other) {
-    return priority.compareTo(other.priority);
-  }
 }

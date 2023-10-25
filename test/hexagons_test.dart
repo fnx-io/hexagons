@@ -43,13 +43,13 @@ void main() {
           expect(Hex.fromOffset(o), equals(h));
         }
         {
-          // oddR is default
+          // POINTY_TOP is default
           var o = h.toOffset();
-          expect(Hex.fromOffset(o, GridLayout.oddR), equals(h));
+          expect(Hex.fromOffset(o, GridLayout.POINTY_TOP), equals(h));
         }
         {
-          // oddR is default
-          var o = h.toOffset(GridLayout.oddR);
+          // POINTY_TOP is default
+          var o = h.toOffset(GridLayout.POINTY_TOP);
           expect(Hex.fromOffset(o), equals(h));
         }
         for (var clazz in GridLayout.values) {
@@ -109,7 +109,7 @@ void main() {
       var ring = d.ring(10);
       var h = ring[Random().nextInt(ring.length)];
       int distance = d.distanceTo(h);
-      var path = d.pathTo(h, (Hex h, Hex n) => 1)!;
+      var path = d.pathTo(h)!;
       expect(path.length, equals(distance + 1));
     });
     test('pathCosts', () {
@@ -118,7 +118,7 @@ void main() {
       int minDistance = d.distanceTo(t);
       // "even" hex is wall
       bool forbiddenHex(Hex h) => h.cube.r.abs() % 2 == 0 && h.cube.q.abs() % 2 == 0;
-      var path = d.pathTo(t, (Hex movingFrom, Hex movingTo) => forbiddenHex(movingTo) ? double.infinity : 1)!;
+      var path = d.pathTo(t, costFunction: (Hex movingFrom, Hex movingTo) => forbiddenHex(movingTo) ? double.infinity : 1)!;
       expect(path.length, greaterThanOrEqualTo(minDistance + 1));
       for (var o in path) {
         expect(forbiddenHex(o), isFalse);
@@ -131,7 +131,7 @@ void main() {
       int distanceToCenter = a.distanceTo(c);
       var wall = c.ring(9);
       bool forbiddenHex(Hex h) => wall.contains(h);
-      var path = a.pathTo(b, (Hex movingFrom, Hex movingTo) => forbiddenHex(movingTo) ? double.infinity : 1)!;
+      var path = a.pathTo(b, costFunction: (Hex movingFrom, Hex movingTo) => forbiddenHex(movingTo) ? double.infinity : 1)!;
       for (var o in path) {
         expect(forbiddenHex(o), isFalse);
         // we are running in circle around the wall
@@ -143,7 +143,7 @@ void main() {
       var a = Hex(-10, 10, 0);
       var wall = c.ring(9);
       bool forbiddenHex(Hex h) => wall.contains(h);
-      var path = a.pathTo(c, (Hex movingFrom, Hex movingTo) => forbiddenHex(movingTo) ? double.infinity : 1);
+      var path = a.pathTo(c, costFunction: (Hex movingFrom, Hex movingTo) => forbiddenHex(movingTo) ? double.infinity : 1);
       expect(path, isNull);
     });
   });
