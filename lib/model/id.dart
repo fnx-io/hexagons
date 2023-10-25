@@ -4,18 +4,27 @@ const int _minValue = -2 ^ 29;
 const int _maxValue = 2 ^ 29;
 const int _shiftAmount = 32;
 
-String _createId(Cube c) {
-  if (c.q < _minValue || c.q > _maxValue || c.r < _minValue || c.r > _maxValue) {
-    throw ArgumentError("Coordinates must be limited from $_minValue to $_maxValue.");
-  }
-  int combined = (_positive(c.q) << _shiftAmount) | (_positive(c.r) & 0xFFFFFFFF);
-  return combined.toRadixString(32);
+// Funkce pro vytvoření unikátního identifikátoru z dvou celých čísel
+String _createCubeId(Cube c) {
+  String rStr = _positive(c.r).toRadixString(32);
+  String qStr = _positive(c.q).toRadixString(32);
+
+  // Získáme délku delšího řetězce a upravíme kratší řetězec tak, aby měl stejnou délku
+  int maxLength = (rStr.length > qStr.length) ? rStr.length : qStr.length;
+  rStr = rStr.padLeft(maxLength, '0');
+  qStr = qStr.padLeft(maxLength, '0');
+  return rStr + qStr;
 }
 
-Cube _createCube(String identifier) {
-  int combined = int.parse(identifier, radix: 32);
-  int q = _revert(combined >> _shiftAmount);
-  int r = _revert(combined & 0xFFFFFFFF);
+// Funkce pro získání původních dvou čísel z unikátního identifikátoru
+Cube _createCubeFromId(String identifier) {
+  int halfLength = identifier.length ~/ 2;
+  String rStr = identifier.substring(0, halfLength);
+  String qStr = identifier.substring(halfLength);
+
+  int r = _revert(int.parse(rStr, radix: 32));
+  int q = _revert(int.parse(qStr, radix: 32));
+
   return Cube(q, r, -q - r);
 }
 

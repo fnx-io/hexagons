@@ -69,20 +69,19 @@ void main() {
       });
     });
     test('id', () {
-      var d = Hex(12, -7, -5);
-      var items = d.neighbors().toList();
-      items.add(d);
-      items.forEach((n) {
-        for (int a = 0; a < 2; a++) {
-          // internal caching?
-          String id = n.id;
-          expect(id, isNotNull);
-          expect(id, isNotEmpty);
-          expect(id, equals(n.id));
-          Hex h = Hex.fromId(id);
-          expect(h, equals(n));
-        }
-      });
+      Random rnd = new Random();
+      for (int a = 0; a < 100; a++) {
+        int max = 10e8.toInt();
+        var r = rnd.nextInt(max) - max ~/ 2;
+        var q = rnd.nextInt(max) - max ~/ 2;
+        var n = Hex(r, q, -r - q);
+        String id = n.id;
+        expect(id, isNotNull);
+        expect(id, isNotEmpty);
+        expect(id, equals(n.id));
+        Hex h = Hex.fromId(id);
+        expect(h, equals(n));
+      }
     });
     test('offset', () {
       var d = Hex(1, 7, -8);

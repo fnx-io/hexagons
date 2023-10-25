@@ -22,11 +22,11 @@ class Hex {
 
   Hex.fromOffset(Offset offset, [GridLayout gridClass = GridLayout.oddR]) : cube = offset.toCube(gridClass);
 
-  Hex.fromId(String id) : cube = _createCube(id);
+  Hex.fromId(String id) : cube = _createCubeFromId(id);
 
   String? _id;
 
-  String get id => (_id ??= _createId(cube));
+  String get id => (_id ??= _createCubeId(cube));
 
   Offset toOffset([GridLayout gridClass = GridLayout.oddR]) {
     return cube.toOffset(gridClass);
