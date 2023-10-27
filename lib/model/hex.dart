@@ -31,8 +31,8 @@ class Hex {
   /// Creates hexagon in 0,0,0
   Hex.zero() : cube = Cube(0, 0, 0);
 
-  /// Creates hexagon from a given [Offset] coordinates, using the given [GridLayout].
-  Hex.fromOffset(Offset offset, [GridLayout gridLayout = GridLayout.POINTY_TOP]) : cube = offset.toCube(gridLayout);
+  /// Creates hexagon from a given [GridOffset] coordinates, using the given [GridLayout].
+  Hex.fromOffset(GridOffset offset, [GridLayout gridLayout = GridLayout.POINTY_TOP]) : cube = offset.toCube(gridLayout);
 
   /// Creates hexagon from a given [id].
   Hex.fromId(String id) : cube = _createCubeFromId(id);
@@ -43,9 +43,9 @@ class Hex {
   /// coordinates of this hexagon. It can be used to restore the [Hex] using [Hex.fromId] constructor.
   String get id => (_id ??= _createCubeId(cube));
 
-  /// Creates [Offset] coordinates from this hexagon, using the given [GridLayout].
-  Offset toOffset([GridLayout gridLayout = GridLayout.POINTY_TOP]) {
-    return cube.toOffset(gridLayout);
+  /// Creates [GridOffset] coordinates from this hexagon, using the given [GridLayout].
+  GridOffset toOffset([GridLayout gridLayout = GridLayout.POINTY_TOP]) {
+    return cube.toGridOffset(gridLayout);
   }
 
   Cube _cubeAtDirection(int direction) {
@@ -102,6 +102,16 @@ class Hex {
     return results;
   }
 
+  List<Hex> line(Hex to) {
+    var results = <Hex>[];
+    var n = distanceTo(to);
+    var step = 1.0 / max(n, 1);
+    for (var i = 0; i <= n; i++) {
+      results.add(Hex.fromCube(cubeLerp(this.cube, to.cube, step * i)));
+    }
+    return results;
+  }
+
   /// Random hex with distance to 'this' <= radius.
   /// Probability is the same for all hexes within the area (as opposed to higher probability near the center).
   Hex randomHexInArea(int radius) {
@@ -128,13 +138,58 @@ class Hex {
   /// Computes the shortest path to other hex. The path is a list of connected hexes, including 'this' and [to]. If there is no path,
   /// method returns null. The path is computed using the given [costFunction], which is a function that returns the cost of
   /// transition from one hex to another. See [MoveCost]. Default [costFunction] assigns value 1 to any transition.
-  /// The grid searched is limited by a circle with radius [maximumDistanceFromTo] and
-  /// center in [to]. Default value of [maximumDistanceFromTo] is arbitrary value of `2 * this.distanceTo(to) + 10`.
+  /// The searched area is limited by a circle with radius [maximumDistanceFromTo] and
+  /// center in [to]. Default value of [maximumDistanceFromTo] is arbitrary value of `max(distanceTo(to) * 2, 10)`.
   ///
-  List<Hex>? pathTo(Hex to, {MoveCost? costFunction, int? maximumDistanceFromTo}) {
-    maximumDistanceFromTo ??= distanceTo(to) * 2 + 10;
+  List<Hex>? cheapestPathTo(Hex to, {MoveCost? costFunction, int? maximumDistanceFromTo}) {
+    maximumDistanceFromTo ??= max(distanceTo(to) * 2, 10);
     costFunction ??= (from, to) => 1;
-    return findShortestPath(this, to, costFunction, maximumDistanceFromTo);
+    return findCheapestPath(this, to, costFunction, maximumDistanceFromTo);
+  }
+
+  PixelPoint centerPoint(double size, {GridLayout gridLayout = GridLayout.POINTY_TOP}) {
+    return cube.centerPoint(size, gridLayout);
+  }
+
+  PixelPoint topLeftPoint(double size, {GridLayout gridLayout = GridLayout.POINTY_TOP}) {
+    var center = cube.centerPoint(size, gridLayout);
+    if (gridLayout == GridLayout.POINTY_TOP) {
+      double w = _sqrt3_2 * size;
+      return PixelPoint(center.x - w, center.y - size);
+    } else if (gridLayout == GridLayout.FLAT_TOP) {
+      double h = _sqrt3_2 * size;
+      return PixelPoint(center.x - size, center.y - h);
+    } else {
+      throw ArgumentError('Unknown grid layout: $gridLayout');
+    }
+  }
+
+  List<PixelPoint> vertices(double size, {GridLayout gridLayout = GridLayout.POINTY_TOP, double padding = 0}) {
+    var center = cube.centerPoint(size, gridLayout);
+    double paddedSize = size - padding;
+    if (gridLayout == GridLayout.POINTY_TOP) {
+      double w = _sqrt3_2 * paddedSize;
+      return [
+        PixelPoint(center.x, center.y - paddedSize),
+        PixelPoint(center.x + w, center.y - paddedSize / 2),
+        PixelPoint(center.x + w, center.y + paddedSize / 2),
+        PixelPoint(center.x, center.y + paddedSize),
+        PixelPoint(center.x - w, center.y + paddedSize / 2),
+        PixelPoint(center.x - w, center.y - paddedSize / 2),
+      ];
+    } else if (gridLayout == GridLayout.FLAT_TOP) {
+      double h = _sqrt3_2 * paddedSize;
+      return [
+        PixelPoint(center.x - paddedSize, center.y),
+        PixelPoint(center.x - paddedSize / 2, center.y + h),
+        PixelPoint(center.x + paddedSize / 2, center.y + h),
+        PixelPoint(center.x + paddedSize, center.y),
+        PixelPoint(center.x + paddedSize / 2, center.y - h),
+        PixelPoint(center.x - paddedSize / 2, center.y - h),
+      ];
+    } else {
+      throw ArgumentError('Unknown grid layout: $gridLayout');
+    }
   }
 
   @override
@@ -143,7 +198,7 @@ class Hex {
   @override
   int get hashCode => cube.hashCode;
 
-  String toString() => 'Hex(${cube.r}, ${cube.q}, ${cube.s})';
+  String toString() => 'Hex(${cube.q}, ${cube.r}, ${cube.s})';
 
   /// Convenient method to serialize hex to string (uses [id])
   String serialize() => id;

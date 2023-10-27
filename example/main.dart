@@ -10,7 +10,7 @@ void main() {
   print(hexA.distanceTo(hexB));
   // Prints: 7
 
-  print(hexA.pathTo(hexB));
+  print(hexA.cheapestPathTo(hexB));
   // Prints: [Hex(0, 0, 0), Hex(-1, 0, 1), Hex(-2, 0, 2), Hex(-2, -1, 3), ...
 
   print(hexA.ring(3));

@@ -17,7 +17,7 @@ void main() {
   print(hexA.distanceTo(hexB));
   // Prints: 7
 
-  print(hexA.pathTo(hexB));
+  print(hexA.cheapestPathTo(hexB));
   // Prints: [Hex(0, 0, 0), Hex(-1, 0, 1), Hex(-2, 0, 2), Hex(-2, -1, 3), ...
 
   print(hexA.ring(3));
@@ -29,3 +29,63 @@ void main() {
   // hexA.randomNeighborWhere(filter);
 }
 ```
+
+## Rendering in Flutter
+
+The library itself doesn't depend on Flutter, however the rendering is pretty straightforward:
+
+```dart
+class MyApp extends StatelessWidget {
+
+
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return CustomPaint(
+      painter: HexPainter(myHexesToPain),
+      child: Container(),
+    );
+  }
+}
+
+class HexPainter extends CustomPainter {
+  static const hexSize = 20.0;
+  final List<Hex> toPaint;
+
+  HexPainter(this.toPaint);
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    canvas.save();
+    // Zero in the center
+    canvas.translate(size.width / 2, size.height / 2);
+
+    for (var hex in toPaint) {
+      final paint = Paint()..color = Colors.red;
+
+      // Just get the vertices ...
+      var vertices = hex.vertices(hexSize).map((e) => Offset(e.x, e.y)).toList();
+
+      // ... and draw them
+      canvas.drawVertices(Vertices(VertexMode.triangleFan, vertices), BlendMode.plus, paint);
+    }
+    canvas.restore();
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
+}
+```
+
+`vertices()` method returns a list o 6 points, which can be easily passed to `drawVertices` method.
+`hexSize` of the hex is it's "radius", see diagram at https://www.redblobgames.com/grids/hexagons/#basics
+
+
+## Glory to Hexagons!
+
+![Hexagons](demo.png)
+
+... this "world generator" is not part of the library, but it's something you can easily whip out with this toolkit.
+
+Once again, thanks to https://www.redblobgames.com/grids/hexagons/ for the inspiration.

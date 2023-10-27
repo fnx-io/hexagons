@@ -10,11 +10,11 @@ enum GridLayout {
 /// Rather impractical representation of a hexagon in a hexagonal grid, positioned by [q] (column) and [r] (row) coordinates.
 /// "Zero" hexagon is in the top left corner. Odd rows (columns) are shifted to the right (down).
 /// See https://www.redblobgames.com/grids/hexagons/#coordinates for more information.
-class Offset {
+class GridOffset {
   final int q;
   final int r;
 
-  Offset(this.q, this.r);
+  GridOffset(this.q, this.r);
 
   /// Converts this offset to a [Cube] coordinate, using the given [GridLayout].
   Cube toCube([GridLayout gridLayout = GridLayout.POINTY_TOP]) {
@@ -40,7 +40,7 @@ class Offset {
 
   @override
   bool operator ==(Object other) =>
-      identical(this, other) || other is Offset && runtimeType == other.runtimeType && q == other.q && r == other.r;
+      identical(this, other) || other is GridOffset && runtimeType == other.runtimeType && q == other.q && r == other.r;
 
   @override
   int get hashCode => q.hashCode ^ r.hashCode;
@@ -64,12 +64,14 @@ class Cube {
 
   Cube.fromAxial(int q, int r) : this(q, r, -q - r);
 
-  /// Converts this cube to an [Offset] coordinate, using the given [GridLayout].
-  Offset toOffset([GridLayout gridLayout = GridLayout.POINTY_TOP]) {
+  factory Cube.fromGridOffset(GridOffset o, [GridLayout gridLayout = GridLayout.POINTY_TOP]) => o.toCube(gridLayout);
+
+  /// Converts this cube to an [GridOffset] coordinate, using the given [GridLayout].
+  GridOffset toGridOffset([GridLayout gridLayout = GridLayout.POINTY_TOP]) {
     if (gridLayout == GridLayout.POINTY_TOP) {
       var col = q + (r - (r & 1)) ~/ 2;
       var row = r;
-      return Offset(col, row);
+      return GridOffset(col, row);
       // } else if (gridLayout == GridLayout.evenR) {
       //   var col = q + (r + (r & 1)) ~/ 2;
       //   var row = r;
@@ -77,13 +79,26 @@ class Cube {
     } else if (gridLayout == GridLayout.FLAT_TOP) {
       var col = q;
       var row = r + (q - (q & 1)) ~/ 2;
-      return Offset(col, row);
+      return GridOffset(col, row);
       // } else if (gridLayout == GridLayout.evenQ) {
       //   var col = q;
       //   var row = r + (q + (q & 1)) ~/ 2;
       //   return Offset(col, row);
     } else
-      throw ArgumentError('Invalid grid class: $gridLayout');
+      throw ArgumentError('Invalid grid layout: $gridLayout');
+  }
+
+  PixelPoint centerPoint(double size, [GridLayout gridLayout = GridLayout.POINTY_TOP]) {
+    if (gridLayout == GridLayout.POINTY_TOP) {
+      var x = size * (_sqrt3 * q + _sqrt3_2 * r);
+      var y = size * (3 / 2 * r);
+      return PixelPoint(x, y);
+    } else if (gridLayout == GridLayout.FLAT_TOP) {
+      var x = size * (3 / 2 * q);
+      var y = size * (_sqrt3_2 * q + _sqrt3 * r);
+      return PixelPoint(x, y);
+    } else
+      throw ArgumentError('Invalid grid layout: $gridLayout');
   }
 
   Cube operator +(Cube delta) {

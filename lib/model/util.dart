@@ -1,6 +1,7 @@
 part of hex_toolkit;
 
-const sqrt3 = 1.73205080757;
+const _sqrt3 = 1.73205080757; // sqrt(3)
+const _sqrt3_2 = 0.86602540378; // sqrt(3) / 2
 
 var _r = Random();
 
@@ -19,7 +20,9 @@ double _lerp(num a, num b, double t) {
 }
 
 Cube cubeLerp(Cube a, Cube b, double t) {
-  return Cube(_lerp(a.q, b.q, t).round(), _lerp(a.r, b.r, t).round(), _lerp(a.s, b.s, t).round());
+  var q = _lerp(a.q, b.q, t).round();
+  var r = _lerp(a.r, b.r, t).round();
+  return Cube(q, r, -r - q);
 }
 
 List<Cube> cubeLinedraw(Cube a, Cube b) {
