@@ -32,10 +32,25 @@ class Hex {
   Hex.zero() : cube = Cube(0, 0, 0);
 
   /// Creates hexagon from a given [GridOffset] coordinates, using the given [GridLayout].
-  Hex.fromOffset(GridOffset offset, [GridLayout gridLayout = GridLayout.POINTY_TOP]) : cube = offset.toCube(gridLayout);
+  Hex.fromOffset(GridOffset offset, {GridLayout gridLayout = GridLayout.POINTY_TOP}) : cube = offset.toCube(gridLayout: gridLayout);
 
   /// Creates hexagon from a given [id].
   Hex.fromId(String id) : cube = _createCubeFromId(id);
+
+  /// Creates hexagon from a given [PixelPoint] coordinates, using the given [GridLayout] and size of one hex in grid.
+  factory Hex.fromPixelPoint(PixelPoint point, double hexSize, {GridLayout gridLayout = GridLayout.POINTY_TOP}) {
+    if (gridLayout == GridLayout.POINTY_TOP) {
+      var q = (_sqrt3 / 3 * point.x - 1 / 3 * point.y) / hexSize;
+      var r = (2 / 3 * point.y) / hexSize;
+      return Hex.fromCube(roundCube(q, r, -q - r));
+    } else if (gridLayout == GridLayout.FLAT_TOP) {
+      var q = (2 / 3 * point.x) / hexSize;
+      var r = (-1 / 3 * point.x + _sqrt3 / 3 * point.y) / hexSize;
+      return Hex.fromCube(roundCube(q, r, -q - r));
+    } else {
+      throw ArgumentError('Unknown grid layout: $gridLayout');
+    }
+  }
 
   String? _id;
 
@@ -44,7 +59,7 @@ class Hex {
   String get id => (_id ??= _createCubeId(cube));
 
   /// Creates [GridOffset] coordinates from this hexagon, using the given [GridLayout].
-  GridOffset toOffset([GridLayout gridLayout = GridLayout.POINTY_TOP]) {
+  GridOffset toOffset({GridLayout gridLayout = GridLayout.POINTY_TOP}) {
     return cube.toGridOffset(gridLayout);
   }
 
@@ -66,6 +81,10 @@ class Hex {
     return cubeDistance(cube, other.cube);
   }
 
+  bool isNeighborOf(Hex other) {
+    return distanceTo(other) == 1;
+  }
+
   /// Chooses random neighbor.
   Hex randomNeighbor() {
     return _toHex(_cubeNeighbor(cube, _r.nextInt(6)));
@@ -80,42 +99,39 @@ class Hex {
   }
 
   /// Creates a list of all hexes with the given radius=distance (a 'ring' with 'this' in the center).
-  List<Hex> ring(int radius) {
-    if (radius == 0) return [this];
-    var results = <Hex>[];
+  Iterable<Hex> ring(int radius) sync* {
+    if (radius == 0) {
+      yield this;
+      return;
+    }
     var hex = cube + _cubeAtDirection(4) * radius;
     for (var i = 0; i < 6; i++) {
       for (var j = 0; j < radius; j++) {
-        results.add(_toHex(hex));
+        yield _toHex(hex);
         hex = _cubeNeighbor(hex, i);
       }
     }
-    return results;
   }
 
   /// Creates a list of all hexes with the distance <= radius (a 'spiral' with 'this' in the center).
-  List<Hex> spiral(int radius) {
-    var results = <Hex>[];
+  Iterable<Hex> spiral(int radius) sync* {
     for (var i = 0; i <= radius; i++) {
-      results.addAll(ring(i));
+      yield* ring(i);
     }
-    return results;
   }
 
-  List<Hex> line(Hex to) {
-    var results = <Hex>[];
+  Iterable<Hex> line(Hex to) sync* {
     var n = distanceTo(to);
     var step = 1.0 / max(n, 1);
     for (var i = 0; i <= n; i++) {
-      results.add(Hex.fromCube(cubeLerp(this.cube, to.cube, step * i)));
+      yield Hex.fromCube(cubeLerp(this.cube, to.cube, step * i));
     }
-    return results;
   }
 
   /// Random hex with distance to 'this' <= radius.
   /// Probability is the same for all hexes within the area (as opposed to higher probability near the center).
   Hex randomHexInArea(int radius) {
-    var all = spiral(radius);
+    var all = spiral(radius).toList();
     return all[_r.nextInt(all.length)];
   }
 
@@ -141,16 +157,18 @@ class Hex {
   /// The searched area is limited by a circle with radius [maximumDistanceFromTo] and
   /// center in [to]. Default value of [maximumDistanceFromTo] is arbitrary value of `max(distanceTo(to) * 2, 10)`.
   ///
-  List<Hex>? cheapestPathTo(Hex to, {MoveCost? costFunction, int? maximumDistanceFromTo}) {
+  HexPath? cheapestPathTo(Hex to, {MoveCost? costFunction, int? maximumDistanceFromTo}) {
     maximumDistanceFromTo ??= max(distanceTo(to) * 2, 10);
     costFunction ??= (from, to) => 1;
     return findCheapestPath(this, to, costFunction, maximumDistanceFromTo);
   }
 
+  /// Center of this hex in a pixel grid.
   PixelPoint centerPoint(double size, {GridLayout gridLayout = GridLayout.POINTY_TOP}) {
     return cube.centerPoint(size, gridLayout);
   }
 
+  /// Top left corner of this hex in a pixel grid (use it to draw the hex using a raster graphics).
   PixelPoint topLeftPoint(double size, {GridLayout gridLayout = GridLayout.POINTY_TOP}) {
     var center = cube.centerPoint(size, gridLayout);
     if (gridLayout == GridLayout.POINTY_TOP) {
@@ -164,28 +182,31 @@ class Hex {
     }
   }
 
+  /// Returns a list of vertices of this hex in a pixel grid (use it to draw the hex using a vector graphics).
+  /// See: https://www.redblobgames.com/grids/hexagons/#basics
   List<PixelPoint> vertices(double size, {GridLayout gridLayout = GridLayout.POINTY_TOP, double padding = 0}) {
     var center = cube.centerPoint(size, gridLayout);
     double paddedSize = size - padding;
+    double paddedSize_2 = paddedSize / 2;
     if (gridLayout == GridLayout.POINTY_TOP) {
       double w = _sqrt3_2 * paddedSize;
       return [
         PixelPoint(center.x, center.y - paddedSize),
-        PixelPoint(center.x + w, center.y - paddedSize / 2),
-        PixelPoint(center.x + w, center.y + paddedSize / 2),
+        PixelPoint(center.x + w, center.y - paddedSize_2),
+        PixelPoint(center.x + w, center.y + paddedSize_2),
         PixelPoint(center.x, center.y + paddedSize),
-        PixelPoint(center.x - w, center.y + paddedSize / 2),
-        PixelPoint(center.x - w, center.y - paddedSize / 2),
+        PixelPoint(center.x - w, center.y + paddedSize_2),
+        PixelPoint(center.x - w, center.y - paddedSize_2),
       ];
     } else if (gridLayout == GridLayout.FLAT_TOP) {
       double h = _sqrt3_2 * paddedSize;
       return [
         PixelPoint(center.x - paddedSize, center.y),
-        PixelPoint(center.x - paddedSize / 2, center.y + h),
-        PixelPoint(center.x + paddedSize / 2, center.y + h),
+        PixelPoint(center.x - paddedSize_2, center.y + h),
+        PixelPoint(center.x + paddedSize_2, center.y + h),
         PixelPoint(center.x + paddedSize, center.y),
-        PixelPoint(center.x + paddedSize / 2, center.y - h),
-        PixelPoint(center.x - paddedSize / 2, center.y - h),
+        PixelPoint(center.x + paddedSize_2, center.y - h),
+        PixelPoint(center.x - paddedSize_2, center.y - h),
       ];
     } else {
       throw ArgumentError('Unknown grid layout: $gridLayout');

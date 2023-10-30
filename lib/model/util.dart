@@ -12,7 +12,7 @@ void setRandomSeed(int seed) {
 
 int cubeDistance(Cube a, Cube b) {
   if (a == b) return 0;
-  return ((a.q - b.q).abs() + (a.r - b.r).abs() + (a.s - b.s).abs()) ~/ 2;
+  return ((a.q - b.q).abs() + (a.r - b.r).abs() + (a.s - b.s).abs()) >> 1; // ~/2
 }
 
 double _lerp(num a, num b, double t) {

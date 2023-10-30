@@ -45,17 +45,17 @@ void main() {
         {
           // POINTY_TOP is default
           var o = h.toOffset();
-          expect(Hex.fromOffset(o, GridLayout.POINTY_TOP), equals(h));
+          expect(Hex.fromOffset(o, gridLayout: GridLayout.POINTY_TOP), equals(h));
         }
         {
           // POINTY_TOP is default
-          var o = h.toOffset(GridLayout.POINTY_TOP);
+          var o = h.toOffset(gridLayout: GridLayout.POINTY_TOP);
           expect(Hex.fromOffset(o), equals(h));
         }
         for (var clazz in GridLayout.values) {
           // explicit class
-          var o = h.toOffset(clazz);
-          expect(Hex.fromOffset(o, clazz), equals(h));
+          var o = h.toOffset(gridLayout: clazz);
+          expect(Hex.fromOffset(o, gridLayout: clazz), equals(h));
         }
       }
     });
@@ -106,46 +106,31 @@ void main() {
     });
     test('pathStraight', () {
       var d = Hex.zero();
-      var ring = d.ring(10);
+      var ring = d.ring(10).toList();
       var h = ring[Random().nextInt(ring.length)];
       int distance = d.distanceTo(h);
       var path = d.cheapestPathTo(h)!;
-      expect(path.length, equals(distance + 1));
+      expect(path.path.length, equals(distance + 1));
+      expect(path.from, d);
+      expect(path.to, h);
+      expect(path.path.first, d);
+      expect(path.path.last, h);
+      // and in this case also:
+      expect(path.totalCost.round(), equals(distance));
     });
-    test('pathCosts', () {
+    test('pathAroundWalls', () {
       var d = Hex(1, 0, -1);
       var t = Hex(-9, 9, 0);
       int minDistance = d.distanceTo(t);
       // "even" hex is wall
       bool forbiddenHex(Hex h) => h.cube.r.abs() % 2 == 0 && h.cube.q.abs() % 2 == 0;
       var path = d.cheapestPathTo(t, costFunction: (Hex movingFrom, Hex movingTo) => forbiddenHex(movingTo) ? double.infinity : 1)!;
-      expect(path.length, greaterThanOrEqualTo(minDistance + 1));
-      for (var o in path) {
+      expect(path.path.length, greaterThanOrEqualTo(minDistance + 1));
+      for (var o in path.path) {
         expect(forbiddenHex(o), isFalse);
       }
     });
-    test('pathCosts2', () {
-      var from = Hex(0, 0, 0);
-      var a = Hex(1, -1, 0);
-      var b = Hex(1, 0, -1);
-      var to = Hex(2, -1, -1);
-
-      double cost(Hex f, Hex t) {
-        if (t == a) return 2;
-        if (t == b) return 1;
-        if (t == to) return 1;
-        return double.infinity;
-      }
-
-      // "even" hex is wall
-      var path = from.cheapestPathTo(to, costFunction: cost);
-      expect(path, isNotNull);
-      expect(path!.length, equals(3));
-      expect(path[0], equals(from));
-      expect(path[1], equals(b));
-      expect(path[2], equals(to));
-    });
-    test('pathCosts2', () {
+    test('pathCosts', () {
       var from = Hex(0, 0, 0);
       var a = Hex(1, -1, 0);
       var b = Hex(1, 0, -1);
@@ -162,7 +147,7 @@ void main() {
 
       {
         costOfA = 3;
-        var path = from.cheapestPathTo(to, costFunction: cost);
+        var path = from.cheapestPathTo(to, costFunction: cost)?.path;
         expect(path, isNotNull);
         expect(path!.length, equals(3));
         expect(path[0], equals(from));
@@ -171,7 +156,7 @@ void main() {
       }
       {
         costOfA = 1;
-        var path = from.cheapestPathTo(to, costFunction: cost);
+        var path = from.cheapestPathTo(to, costFunction: cost)?.path;
         expect(path, isNotNull);
         expect(path!.length, equals(3));
         expect(path[0], equals(from));
@@ -180,7 +165,7 @@ void main() {
       }
       {
         costOfA = 3;
-        var path = to.cheapestPathTo(from, costFunction: cost);
+        var path = to.cheapestPathTo(from, costFunction: cost)?.path;
         expect(path, isNotNull);
         expect(path!.length, equals(3));
         expect(path[0], equals(to));
@@ -189,7 +174,7 @@ void main() {
       }
       {
         costOfA = 1;
-        var path = to.cheapestPathTo(from, costFunction: cost);
+        var path = to.cheapestPathTo(from, costFunction: cost)?.path;
         expect(path, isNotNull);
         expect(path!.length, equals(3));
         expect(path[0], equals(to));
@@ -205,7 +190,7 @@ void main() {
       var wall = c.ring(9);
       bool forbiddenHex(Hex h) => wall.contains(h);
       var path = a.cheapestPathTo(b, costFunction: (Hex movingFrom, Hex movingTo) => forbiddenHex(movingTo) ? double.infinity : 1)!;
-      for (var o in path) {
+      for (var o in path.path) {
         expect(forbiddenHex(o), isFalse);
         // we are running in circle around the wall
         expect(o.distanceTo(c), equals(distanceToCenter));
@@ -218,7 +203,7 @@ void main() {
       var wall = c.ring(4);
       bool expensiveHex(Hex h) => wall.contains(h);
       var path = a.cheapestPathTo(b, costFunction: (Hex movingFrom, Hex movingTo) => expensiveHex(movingTo) ? 100 : 1)!;
-      for (var o in path) {
+      for (var o in path.path) {
         // mountains can be passed, but are expensive, so should be avoided
         expect(expensiveHex(o), isFalse);
       }
@@ -231,9 +216,62 @@ void main() {
       var path = a.cheapestPathTo(c, costFunction: (Hex movingFrom, Hex movingTo) => forbiddenHex(movingTo) ? double.infinity : 1);
       expect(path, isNull);
     });
+    test('pixelCenters', () {
+      var sizes = [1.0, 2.0, pi, 10.0, 100.0];
+      var hexes = Hex.zero().ring(10).toList();
+      hexes.shuffle();
+      hexes = hexes.take(20).toList();
+      for (var layout in GridLayout.values) {
+        for (var size in sizes) {
+          for (var d in hexes) {
+            PixelPoint center = d.centerPoint(size, gridLayout: layout);
+            Hex invert = Hex.fromPixelPoint(center, size, gridLayout: layout);
+            expect(invert, equals(d));
+          }
+        }
+      }
+    });
+    test('pixelsCca', () {
+      var _in = sqrt(3) / 2;
+      var sizes = [1.0, 2.0, pi, 10.0, 100.0];
+      var hexes = Hex.zero().ring(10).toList();
+      hexes.shuffle();
+      hexes = hexes.take(20).toList();
+      for (var layout in GridLayout.values) {
+        for (var size in sizes) {
+          for (var d in hexes) {
+            PixelPoint center = d.centerPoint(size, gridLayout: layout);
+            double inradius = size * _in;
+            // random points within hex
+            for (int a = 0; a < 50; a++) {
+              double randomAngle = Random().nextDouble() * pi * 2;
+              double randomX = center.x + cos(randomAngle) * inradius * Random().nextDouble();
+              double randomY = center.y + sin(randomAngle) * inradius * Random().nextDouble();
+              PixelPoint randomInnerPoint = PixelPoint(randomX, randomY);
+              Hex invert = Hex.fromPixelPoint(randomInnerPoint, size, gridLayout: layout);
+              expect(invert, equals(d));
+            }
+            // vertices computed with non-zero padding
+            var innerVertices = d.vertices(size, gridLayout: layout, padding: 0.00001);
+            for (var innerVertex in innerVertices) {
+              Hex invert = Hex.fromPixelPoint(innerVertex, size, gridLayout: layout);
+              expect(invert, equals(d));
+            }
+            // center of any pair of vertices should be inside the hex
+            for (int a = 0; a < innerVertices.length; a++) {
+              for (int b = a + 1; b < innerVertices.length; b++) {
+                PixelPoint centerOfPair = innerVertices[a].centerWith(innerVertices[b]);
+                Hex invert = Hex.fromPixelPoint(centerOfPair, size, gridLayout: layout);
+                expect(invert, equals(d));
+              }
+            }
+          }
+        }
+      }
+    });
     test('vertices', () {
       var sizes = [1.0, 2.0, pi, 10.0, 100.0];
-      var hexes = Hex.zero().ring(10);
+      var hexes = Hex.zero().ring(10).toList();
       hexes.shuffle();
       hexes = hexes.take(20).toList();
       for (var layout in GridLayout.values) {

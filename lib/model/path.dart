@@ -1,7 +1,7 @@
 part of hex_toolkit;
 
 /// Find the cheapest path from [from] to [to] using [costFunction]. Djikstra's algorithm.
-List<Hex>? findCheapestPath(Hex from, Hex to, MoveCost costFunction, int maximumDistanceTo) {
+HexPath? findCheapestPath(Hex from, Hex to, MoveCost costFunction, int maximumDistanceTo) {
   Map<Hex, double> dist = {};
   Map<Hex, Hex> prev = {};
   Set<Hex> unvisited = {};
@@ -19,7 +19,7 @@ List<Hex>? findCheapestPath(Hex from, Hex to, MoveCost costFunction, int maximum
         path.insert(0, current);
         current = prev[current];
       }
-      return path;
+      return HexPath(from, to, path, totalCost);
     }
 
     for (Hex neighbor in current.neighbors()) {

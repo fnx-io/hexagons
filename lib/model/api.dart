@@ -29,4 +29,38 @@ class PixelPoint {
   double distanceTo(PixelPoint p2) {
     return sqrt(pow(x - p2.x, 2) + pow(y - p2.y, 2));
   }
+
+  PixelPoint centerWith(PixelPoint p2) {
+    return PixelPoint((x + p2.x) / 2, (y + p2.y) / 2);
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) || other is PixelPoint && runtimeType == other.runtimeType && x == other.x && y == other.y;
+
+  @override
+  int get hashCode => x.hashCode ^ y.hashCode;
+}
+
+/// This is a path from one hex to another. It contains the total cost of the path,
+/// and the list of hexes that make up the path. See [Hex.cheapestPathTo] for more details.
+class HexPath {
+  final Hex from;
+  final Hex to;
+  final UnmodifiableListView<Hex> path;
+  final double totalCost;
+  HexPath(this.from, this.to, Iterable<Hex> path, this.totalCost) : this.path = UnmodifiableListView(path.toList());
+
+  /// Returns moving window of segments of defined size. With path a,b,c,d,e and segmentSize 3, this method returns: [[a,b,c], [b,c,d], [c,d,e]]. If the segments size is
+  /// bigger then the path length, the method returns the whole path as a one segment.
+  Iterable<Iterable<Hex>> segments(int segmentSize) sync* {
+    assert(segmentSize > 0);
+    if (segmentSize > path.length) {
+      yield path;
+      return;
+    }
+    for (int i = 0; i < path.length - segmentSize + 1; i++) {
+      yield path.sublist(i, i + segmentSize);
+    }
+  }
 }
