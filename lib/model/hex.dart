@@ -42,11 +42,11 @@ class Hex {
     if (gridLayout == GridLayout.POINTY_TOP) {
       var q = (_sqrt3 / 3 * point.x - 1 / 3 * point.y) / hexSize;
       var r = (2 / 3 * point.y) / hexSize;
-      return Hex.fromCube(roundCube(q, r, -q - r));
+      return Hex.fromCube(cubeRound(q, r, -q - r));
     } else if (gridLayout == GridLayout.FLAT_TOP) {
       var q = (2 / 3 * point.x) / hexSize;
       var r = (-1 / 3 * point.x + _sqrt3 / 3 * point.y) / hexSize;
-      return Hex.fromCube(roundCube(q, r, -q - r));
+      return Hex.fromCube(cubeRound(q, r, -q - r));
     } else {
       throw ArgumentError('Unknown grid layout: $gridLayout');
     }
@@ -137,15 +137,27 @@ class Hex {
 
   /// Generates random shape. The shape is a list of randomly chosen (but connected) hexes, with [hexCount] members,
   /// one of these hexes is 'this'. There is no guarantee of position of 'this' within the shape.
-  List<Hex> randomShape(int hexCount) {
+  Iterable<Hex> randomShape(int hexCount, {num spread = 0.3}) {
     assert(hexCount > 0);
-    List<Hex> result = [];
+    assert(spread >= 0 && spread <= 1);
+    List<Hex> sources = [this];
+    Set<Hex> result = {};
     result.add(this);
     while (result.length < hexCount) {
-      var hex = result[_r.nextInt(result.length)];
-      var neighbor = hex.randomNeighbor();
-      if (!result.contains(neighbor)) {
-        result.add(neighbor);
+      var source = sources.removeAt(0);
+      var nbs = source.neighbors().toList()..shuffle();
+      double trashold = 1;
+      while (spread <= trashold && nbs.isNotEmpty && result.length < hexCount) {
+        //print("Testing ${nbs.last} for $source");
+        var nb = nbs.removeLast();
+        if (!result.contains(nb)) {
+          result.add(nb);
+          sources.add(nb);
+          trashold = _r.nextDouble();
+        }
+      }
+      if (sources.isEmpty) {
+        sources.addAll(result);
       }
     }
     return result;

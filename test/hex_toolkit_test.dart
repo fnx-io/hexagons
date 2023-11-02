@@ -98,10 +98,13 @@ void main() {
     test('randomShape', () {
       var d = Hex.zero();
       var h = d.randomHexInArea(10);
+      var spreads = [0.0, 0.2, 0.5, 0.9, 1.0];
       for (int a = 1; a < 100; a++) {
-        var shape = h.randomShape(a);
-        expect(shape.length, equals(a));
-        expect({...shape}.length, equals(a));
+        for (var c in spreads) {
+          var shape = h.randomShape(a, spread: c);
+          expect(shape.length, equals(a));
+          expect({...shape}.length, equals(a));
+        }
       }
     });
     test('pathStraight', () {

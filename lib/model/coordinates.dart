@@ -51,25 +51,6 @@ class GridOffset {
   }
 }
 
-Cube roundCube(double q, double r, double s) {
-  var rq = q.round();
-  var rr = r.round();
-  var rs = s.round();
-
-  var qDiff = (rq - q).abs();
-  var rDiff = (rr - r).abs();
-  var sDiff = (rs - s).abs();
-
-  if (qDiff > rDiff && qDiff > sDiff) {
-    rq = -rr - rs;
-  } else if (rDiff > sDiff) {
-    rr = -rq - rs;
-  } else {
-    rs = -rq - rr;
-  }
-  return Cube(rq, rr, rs);
-}
-
 /// Smart representation of a hexagon in a hexagonal grid, positioned on three axis. Very practical for a lots of algorithms. Sum of these coordinates is always 0, so technically only [q] and [r] are actually necessary (these are called axial coordinates, see [Cube.fromAxial])).
 /// See https://www.redblobgames.com/grids/hexagons/#coordinates for more information.
 class Cube {
