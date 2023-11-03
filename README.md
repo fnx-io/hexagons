@@ -32,6 +32,7 @@ void main() {
 
 ## Rendering in Flutter
 
+### How to paint
 The library itself doesn't depend on Flutter, however the rendering is pretty straightforward:
 
 ```dart
@@ -80,6 +81,28 @@ class HexPainter extends CustomPainter {
 
 `vertices()` method returns a list o 6 points, which can be easily passed to `drawVertices` method.
 `hexSize` of the hex is it's "radius", see diagram at https://www.redblobgames.com/grids/hexagons/#basics
+
+### What to paint
+
+In order to get a list of hexagons to paint, just find the corners and then iterate with two for loops:
+
+```dart
+
+Iterable<Hex> toDraw() sync* {
+
+    Offset topLeft = Offset(x, y);
+    Offset bottomRight = Offset(x + size.width, y + size.height);
+    
+    var topLeftHex = Hex.fromPixelPoint(PixelPoint(topLeft.dx, topLeft.dy), hexSize).cube.toGridOffset();
+    var bottomRightHex = Hex.fromPixelPoint(PixelPoint(bottomRight.dx, bottomRight.dy), hexSize).cube.toGridOffset();
+
+    for (int hx = topLeftHex.q; hx <= bottomRightHex.q; ++hx) {
+        for (int hy = topLeftHex.r; hy <= bottomRightHex.r; ++hy) {
+            yield Hex.fromOffset(GridOffset(hx, hy));
+        }
+    }
+}
+```
 
 
 ## Glory to Hexagons!

@@ -211,12 +211,44 @@ void main() {
         expect(expensiveHex(o), isFalse);
       }
     });
+    test('line', () {
+      Hex a = Hex(-10, 10, 0);
+      Hex b = Hex(10, -10, 0);
+      List<Hex> line = a.line(b).toList();
+      expect(line.length, equals(21));
+      expect(line.first, equals(a));
+      expect(line.last, equals(b));
+    });
+    test('segments', () {
+      Hex a = Hex(-10, 10, 0);
+      Hex b = Hex(10, -10, 0);
+      List<Hex> line = a.line(b).toList();
+      {
+        var segements = segmentsIterator(line, 2).toList();
+        expect(segements.length, equals(20));
+        expect(segements.first, equals([a, Hex(-9, 9, 0)]));
+        expect(segements.last, equals([Hex(9, -9, 0), b]));
+        for (int a = 0; a < 19; a++) {
+          expect(segements[a], equals([line[a], line[a + 1]]));
+        }
+      }
+      {
+        for (int a = 2; a < 10; a++) {
+          var segements = segmentsIterator(line, a);
+          expect(segements.length, equals(line.length - a + 1));
+          for (var s in segements) {
+            expect(s.length, equals(a));
+          }
+        }
+      }
+    });
     test('pathUnreachable', () {
       var c = Hex.zero();
       var a = Hex(-10, 10, 0);
       var wall = c.ring(9);
       bool forbiddenHex(Hex h) => wall.contains(h);
-      var path = a.cheapestPathTo(c, costFunction: (Hex movingFrom, Hex movingTo) => forbiddenHex(movingTo) ? double.infinity : 1);
+      var path = a.cheapestPathTo(c,
+          maximumDistanceFromTo: 13, costFunction: (Hex movingFrom, Hex movingTo) => forbiddenHex(movingTo) ? double.infinity : 1);
       expect(path, isNull);
     });
     test('pixelCenters', () {

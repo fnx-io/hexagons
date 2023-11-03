@@ -49,3 +49,16 @@ Cube cubeRound(double q, double r, double s) {
   }
   return Cube(rq, rr, rs);
 }
+
+/// Returns moving window of segments of defined size. With path a,b,c,d,e and segmentSize 3, this method returns: [[a,b,c], [b,c,d], [c,d,e]]. If the segments size is
+/// bigger then the path length, the method returns the whole path as a one segment.
+Iterable<Iterable<T>> segmentsIterator<T>(List<T> path, int segmentSize) sync* {
+  assert(segmentSize > 0);
+  if (segmentSize > path.length) {
+    yield path;
+    return;
+  }
+  for (int i = 0; i < path.length - segmentSize + 1; i++) {
+    yield path.sublist(i, i + segmentSize);
+  }
+}
