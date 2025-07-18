@@ -23,12 +23,17 @@ void main() {
   print(hexA.ring(3));
   // Prints: [Hex(3, -3, 0), Hex(3, -2, -1), Hex(3, -1, -2), Hex(3, 0, -3), ...
 
+  // hexA.rotateAround(zero, 2);
+  // hexA.interpolate(hexB, 0.5, Easing.quadInOut);
   // hexA.randomHexInArea(radius)
   // hexA.randomShape(50);
   // hexA.randomNeighbor();
   // hexA.randomNeighborWhere(filter);
+  // ... and many more methods!
 }
 ```
+
+See [API reference](https://pub.dev/documentation/hex_toolkit/latest/hex_toolkit/Hex-class.html#instance-methods) for the full list of methods.
 
 ## Rendering in Flutter
 

@@ -12,7 +12,7 @@ var _directions = [
 
 Hex _toHex(Cube cube) => Hex.fromCube(cube);
 
-/// An unmodifiable abstraction of a hexagon in a hexagonal grid.
+/// An immutable abstraction of a hexagon in a hexagonal grid.
 ///
 /// Offers several useful methods to measure distance, find path etc. Position of the hexagon is defined by a [Cube] coordinates.
 class Hex {
@@ -32,16 +32,13 @@ class Hex {
   Hex.zero() : cube = Cube(0, 0, 0);
 
   /// Creates hexagon from a given [GridOffset] coordinates, using the given [GridLayout].
-  Hex.fromOffset(GridOffset offset,
-      {GridLayout gridLayout = GridLayout.POINTY_TOP})
-      : cube = offset.toCube(gridLayout: gridLayout);
+  Hex.fromOffset(GridOffset offset, {GridLayout gridLayout = GridLayout.POINTY_TOP}) : cube = offset.toCube(gridLayout: gridLayout);
 
   /// Creates hexagon from a given [id].
   Hex.fromId(String id) : cube = _createCubeFromId(id);
 
   /// Creates hexagon from a given [PixelPoint] coordinates, using the given [GridLayout] and size of one hex in grid.
-  factory Hex.fromPixelPoint(PixelPoint point, double hexSize,
-      {GridLayout gridLayout = GridLayout.POINTY_TOP}) {
+  factory Hex.fromPixelPoint(PixelPoint point, double hexSize, {GridLayout gridLayout = GridLayout.POINTY_TOP}) {
     if (gridLayout == GridLayout.POINTY_TOP) {
       var q = (_sqrt3 / 3 * point.x - 1 / 3 * point.y) / hexSize;
       var r = (2 / 3 * point.y) / hexSize;
@@ -76,10 +73,7 @@ class Hex {
 
   /// All my six neighboring hexagons.
   List<Hex> neighbors() {
-    return _directions
-        .map((Cube direction) => cube + direction)
-        .map(_toHex)
-        .toList();
+    return _directions.map((Cube direction) => cube + direction).map(_toHex).toList();
   }
 
   /// Distance to the given hexagon - the number of steps needed to get to the given hexagon.
@@ -175,22 +169,19 @@ class Hex {
   /// The searched area is limited by a circle with radius [maximumDistanceFromTo] and
   /// center in [to]. Default value of [maximumDistanceFromTo] is arbitrary value of `max(distanceTo(to) * 2, 10)`.
   ///
-  HexPath? cheapestPathTo(Hex to,
-      {MoveCost? costFunction, int? maximumDistanceFromTo}) {
+  HexPath? cheapestPathTo(Hex to, {MoveCost? costFunction, int? maximumDistanceFromTo}) {
     maximumDistanceFromTo ??= max(distanceTo(to) * 2, 10);
     costFunction ??= (from, to) => 1;
     return findCheapestPath(this, to, costFunction, maximumDistanceFromTo);
   }
 
   /// Center of this hex in a pixel grid.
-  PixelPoint centerPoint(double size,
-      {GridLayout gridLayout = GridLayout.POINTY_TOP}) {
+  PixelPoint centerPoint(double size, {GridLayout gridLayout = GridLayout.POINTY_TOP}) {
     return cube.centerPoint(size, gridLayout);
   }
 
   /// Top left corner of this hex in a pixel grid (use it to draw the hex using a raster graphics).
-  PixelPoint topLeftPoint(double size,
-      {GridLayout gridLayout = GridLayout.POINTY_TOP}) {
+  PixelPoint topLeftPoint(double size, {GridLayout gridLayout = GridLayout.POINTY_TOP}) {
     var center = cube.centerPoint(size, gridLayout);
     if (gridLayout == GridLayout.POINTY_TOP) {
       double w = _sqrt3_2 * size;
@@ -205,8 +196,7 @@ class Hex {
 
   /// Returns a list of vertices of this hex in a pixel grid (use it to draw the hex using a vector graphics).
   /// See: https://www.redblobgames.com/grids/hexagons/#basics
-  List<PixelPoint> vertices(double size,
-      {GridLayout gridLayout = GridLayout.POINTY_TOP, double padding = 0}) {
+  List<PixelPoint> vertices(double size, {GridLayout gridLayout = GridLayout.POINTY_TOP, double padding = 0}) {
     var center = cube.centerPoint(size, gridLayout);
     double paddedSize = size - padding;
     double paddedSize_2 = paddedSize / 2;
@@ -275,17 +265,14 @@ class Hex {
   /// Interpolates between this hex and the target hex using the specified easing function.
   /// The parameter t should be between 0 and 1, where 0 returns this hex and 1 returns the target hex.
   /// Returns a new Hex instance.
-  Hex interpolate(Hex target, double t,
-      [EasingFunction easing = Easing.linear]) {
+  Hex interpolate(Hex target, double t, [EasingFunction easing = Easing.linear]) {
     assert(t >= 0 && t <= 1);
     double easedT = easing(t);
     return Hex.fromCube(cubeLerp(cube, target.cube, easedT));
   }
 
   @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is Hex && runtimeType == other.runtimeType && cube == other.cube;
+  bool operator ==(Object other) => identical(this, other) || other is Hex && runtimeType == other.runtimeType && cube == other.cube;
 
   @override
   int get hashCode => cube.hashCode;

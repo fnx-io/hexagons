@@ -1,3 +1,7 @@
+## 1.0.3
+
+* minor docs tweaks
+
 ## 1.0.2
 
 * homage to the gods of formating
