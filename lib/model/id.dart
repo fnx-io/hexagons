@@ -1,4 +1,4 @@
-part of hex_toolkit;
+part of '../hex_toolkit.dart';
 
 /// Creates unique ID for a cube
 String _createCubeId(Cube c) {

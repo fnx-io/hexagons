@@ -1,4 +1,4 @@
-part of hex_toolkit;
+part of '../hex_toolkit.dart';
 
 /// This function describes the cost of moving from one hex to another. Both hexes are adjacent.
 /// The cost is a double value, where double.infinity means that the move is impossible (target hex is a wall).
@@ -50,12 +50,13 @@ class HexPath {
   final UnmodifiableListView<Hex> path;
   final double totalCost;
 
-  HexPath(this.from, this.to, Iterable<Hex> path, this.totalCost) : this.path = UnmodifiableListView(path.toList());
+  HexPath(this.from, this.to, Iterable<Hex> path, this.totalCost) : path = UnmodifiableListView(path.toList());
 
   /// Returns moving window of segments of defined size. With path a,b,c,d,e and segmentSize 3, this method returns: [[a,b,c], [b,c,d], [c,d,e]]. If the segments size is
   /// bigger then the path length, the method returns the whole path as a one segment.
   Iterable<Iterable<Hex>> segments({int segmentSize = 2}) => segmentsIterator(path, segmentSize);
 
+  @override
   String toString() {
     return 'HexPath(from: $from, to: $to, totalCost: $totalCost, path: ${path.join(', ')})';
   }

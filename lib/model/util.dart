@@ -1,4 +1,4 @@
-part of hex_toolkit;
+part of '../hex_toolkit.dart';
 
 const _sqrt3 = 1.73205080757; // sqrt(3)
 const _sqrt3_2 = 0.86602540378; // sqrt(3) / 2

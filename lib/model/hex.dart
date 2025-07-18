@@ -1,4 +1,4 @@
-part of hex_toolkit;
+part of '../hex_toolkit.dart';
 
 // All my neighbors
 var _directions = [
@@ -124,7 +124,7 @@ class Hex {
     var n = distanceTo(to);
     var step = 1.0 / max(n, 1);
     for (var i = 0; i <= n; i++) {
-      yield Hex.fromCube(cubeLerp(this.cube, to.cube, step * i));
+      yield Hex.fromCube(cubeLerp(cube, to.cube, step * i));
     }
   }
 
@@ -234,7 +234,7 @@ class Hex {
     if (steps == 0) return this;
 
     // Convert to relative coordinates
-    var rel = this.cube - center.cube;
+    var rel = cube - center.cube;
 
     // Apply rotation
     Cube rotated;
@@ -268,7 +268,7 @@ class Hex {
   Hex interpolate(Hex target, double t, [EasingFunction easing = Easing.linear]) {
     assert(t >= 0 && t <= 1);
     double easedT = easing(t);
-    return Hex.fromCube(cubeLerp(this.cube, target.cube, easedT));
+    return Hex.fromCube(cubeLerp(cube, target.cube, easedT));
   }
 
   @override
@@ -277,6 +277,7 @@ class Hex {
   @override
   int get hashCode => cube.hashCode;
 
+  @override
   String toString() => 'Hex(${cube.q}, ${cube.r}, ${cube.s})';
 
   /// Convenient method to serialize hex to string (uses [id])

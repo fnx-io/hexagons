@@ -10,14 +10,13 @@
 # 'package:lints/core.yaml'. These are just the most critical lints
 # (the recommended set includes the core lints).
 # The core lints are also what is used by pub.dev for scoring packages.
-
 include: package:lints/recommended.yaml
 
-# Uncomment the following section to specify additional rules.
-
-# linter:
-#   rules:
-#     - camel_case_types
+linter:
+  rules:
+    # Disable the rule that would require changing enum values to lowerCamelCase
+    # as that would be a backward incompatible change
+    constant_identifier_names: false
 
 # analyzer:
 #   exclude:

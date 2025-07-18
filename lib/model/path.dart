@@ -1,4 +1,4 @@
-part of hex_toolkit;
+part of '../hex_toolkit.dart';
 
 /// Find the cheapest path from [from] to [to] using [costFunction]. Djikstra's algorithm.
 HexPath? findCheapestPath(Hex from, Hex to, MoveCost costFunction, int maximumDistanceTo) {

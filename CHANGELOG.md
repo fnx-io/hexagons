@@ -1,3 +1,7 @@
+## 1.0.1
+
+* homage to the gods of linting
+
 ## 1.0.0
 
 * support for Dart > 3

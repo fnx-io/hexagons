@@ -18,11 +18,11 @@ void main() {
   group("hex", () {
     test('distance', () {
       var testSets = [
-        _Set(Hex(0, 0, 0), Hex(0, 0, 0), 0),
-        _Set(Hex(0, 0, 0), Hex(0, 0, 0).randomNeighbor(), 1),
-        _Set(Hex(2, -2, -0), Hex(2, -2, -0).randomNeighbor(), 1),
-        _Set(Hex(2, -2, -0), Hex(2, -2, -0).neighbors().first.neighbors().first, 2), // sousede zacinaji vzdy stejnym smerem
-        _Set(Hex(-1, -3, 4), Hex(-3, 4, -1), 7),
+        TestSet(Hex(0, 0, 0), Hex(0, 0, 0), 0),
+        TestSet(Hex(0, 0, 0), Hex(0, 0, 0).randomNeighbor(), 1),
+        TestSet(Hex(2, -2, -0), Hex(2, -2, -0).randomNeighbor(), 1),
+        TestSet(Hex(2, -2, -0), Hex(2, -2, -0).neighbors().first.neighbors().first, 2), // sousede zacinaji vzdy stejnym smerem
+        TestSet(Hex(-1, -3, 4), Hex(-3, 4, -1), 7),
       ];
       var d = Cube(12, -7, -5);
       for (var i in testSets) {
@@ -64,12 +64,12 @@ void main() {
       var nbrs = d.neighbors();
       expect(nbrs.length, equals(6));
       expect({...nbrs}.length, equals(6));
-      nbrs.forEach((n) {
+      for (var n in nbrs) {
         expect(d.distanceTo(n), equals(1), reason: "cubeDistance($d, $n) != 1");
-      });
+      }
     });
     test('id', () {
-      Random rnd = new Random();
+      Random rnd = Random();
       for (int a = 0; a < 100; a++) {
         int max = 10e8.toInt();
         var r = rnd.nextInt(max) - max ~/ 2;
@@ -87,13 +87,13 @@ void main() {
       var d = Hex(1, 7, -8);
       var items = d.neighbors().toList();
       items.add(d);
-      items.forEach((n) {
+      for (var n in items) {
         GridOffset o = n.toOffset();
         expect(o, isNotNull);
         expect(o, equals(n.toOffset()));
         Hex h = Hex.fromOffset(o);
         expect(h, equals(n));
-      });
+      }
     });
     test('randomShape', () {
       var d = Hex.zero();
@@ -267,7 +267,7 @@ void main() {
       }
     });
     test('pixelsCca', () {
-      var _in = sqrt(3) / 2;
+      var inRadius = sqrt(3) / 2;
       var sizes = [1.0, 2.0, pi, 10.0, 100.0];
       var hexes = Hex.zero().ring(10).toList();
       hexes.shuffle();
@@ -276,7 +276,7 @@ void main() {
         for (var size in sizes) {
           for (var d in hexes) {
             PixelPoint center = d.centerPoint(size, gridLayout: layout);
-            double inradius = size * _in;
+            double inradius = size * inRadius;
             // random points within hex
             for (int a = 0; a < 50; a++) {
               double randomAngle = Random().nextDouble() * pi * 2;
@@ -311,14 +311,15 @@ void main() {
       hexes = hexes.take(20).toList();
       for (var layout in GridLayout.values) {
         for (var size in sizes) {
-          for (var d in hexes) {
+          // We don't use the hex from hexes, just need to run this code multiple times
+          for (int i = 0; i < hexes.length; i++) {
             var d = Hex.zero();
             var vertices = d.vertices(size, gridLayout: layout);
             var c = d.centerPoint(size, gridLayout: layout);
             expect(vertices.length, equals(6));
-            for (var i in vertices) {
+            for (var vertex in vertices) {
               // should be on circle around the center
-              expect(i.distanceTo(c), closeTo(size, 0.0001));
+              expect(vertex.distanceTo(c), closeTo(size, 0.0001));
             }
             for (int a = 0; a < 5; a++) {
               expect(vertices[a].distanceTo(vertices[a + 1]), closeTo(size, 0.0001));
@@ -401,11 +402,11 @@ void main() {
   });
 }
 
-class _Set<A, B, R> {
+class TestSet<A, B, R> {
   final A a;
   final B b;
   final R r;
-  _Set(this.a, this.b, this.r);
+  TestSet(this.a, this.b, this.r);
 
   @override
   String toString() {

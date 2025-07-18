@@ -1,4 +1,4 @@
-part of hex_toolkit;
+part of '../hex_toolkit.dart';
 
 /// Two possible layouts of a hexagonal grid, which are used to convert between cube and offset coordinates, or when actually drawing the grid.
 /// In https://www.redblobgames.com/grids/hexagons/ these are called "odd-r" (pointy) and "odd-q" (flat).
@@ -34,8 +34,9 @@ class GridOffset {
       //   var cq = q;
       //   var cr = r - (q + (q & 1)) ~/ 2;
       //   return Cube(cq, cr, -cq - cr);
-    } else
+    } else {
       throw ArgumentError('Invalid grid class: $gridLayout');
+    }
   }
 
   @override
@@ -84,8 +85,9 @@ class Cube {
       //   var col = q;
       //   var row = r + (q + (q & 1)) ~/ 2;
       //   return Offset(col, row);
-    } else
+    } else {
       throw ArgumentError('Invalid grid layout: $gridLayout');
+    }
   }
 
   PixelPoint centerPoint(double size, [GridLayout gridLayout = GridLayout.POINTY_TOP]) {
@@ -97,8 +99,9 @@ class Cube {
       var x = size * (3 / 2 * q);
       var y = size * (_sqrt3_2 * q + _sqrt3 * r);
       return PixelPoint(x, y);
-    } else
+    } else {
       throw ArgumentError('Invalid grid layout: $gridLayout');
+    }
   }
 
   Cube operator +(Cube delta) {
@@ -120,5 +123,6 @@ class Cube {
   @override
   int get hashCode => q.hashCode ^ r.hashCode ^ s.hashCode;
 
+  @override
   String toString() => 'Cube($q, $r, $s)';
 }

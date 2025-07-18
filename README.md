@@ -107,7 +107,7 @@ Iterable<Hex> toDraw() sync* {
 
 ## Glory to Hexagons!
 
-![Hexagons](demo.png)
+![Hexagons](https://raw.githubusercontent.com/fnx-io/hexagons/refs/heads/master/demo.png)
 
 ... this "world generator" is not part of the library, but it's something you can easily whip out with this toolkit.
 

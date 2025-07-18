@@ -1,8 +1,8 @@
-part of hex_toolkit;
+part of '../hex_toolkit.dart';
 
 List<List<T>> _connectedClustersOfNodes<T>(Iterable<T> candidates, bool Function(T, T) areConnected) {
   List<List<T>> clusters = [];
-  Set<T> visited = Set();
+  Set<T> visited = {};
 
   void dfs(T current, List<T> cluster) {
     visited.add(current);
