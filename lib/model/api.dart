@@ -36,7 +36,11 @@ class PixelPoint {
 
   @override
   bool operator ==(Object other) =>
-      identical(this, other) || other is PixelPoint && runtimeType == other.runtimeType && x == other.x && y == other.y;
+      identical(this, other) ||
+      other is PixelPoint &&
+          runtimeType == other.runtimeType &&
+          x == other.x &&
+          y == other.y;
 
   @override
   int get hashCode => x.hashCode ^ y.hashCode;
@@ -50,11 +54,13 @@ class HexPath {
   final UnmodifiableListView<Hex> path;
   final double totalCost;
 
-  HexPath(this.from, this.to, Iterable<Hex> path, this.totalCost) : path = UnmodifiableListView(path.toList());
+  HexPath(this.from, this.to, Iterable<Hex> path, this.totalCost)
+      : path = UnmodifiableListView(path.toList());
 
   /// Returns moving window of segments of defined size. With path a,b,c,d,e and segmentSize 3, this method returns: [[a,b,c], [b,c,d], [c,d,e]]. If the segments size is
   /// bigger then the path length, the method returns the whole path as a one segment.
-  Iterable<Iterable<Hex>> segments({int segmentSize = 2}) => segmentsIterator(path, segmentSize);
+  Iterable<Iterable<Hex>> segments({int segmentSize = 2}) =>
+      segmentsIterator(path, segmentSize);
 
   @override
   String toString() {
@@ -70,6 +76,7 @@ class Easing {
   static double linear(double t) => t;
   static double easeInQuad(double t) => t * t;
   static double easeOutQuad(double t) => t * (2 - t);
-  static double easeInOutQuad(double t) => t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+  static double easeInOutQuad(double t) =>
+      t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
   // More easing functions could be added
 }

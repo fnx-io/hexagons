@@ -31,7 +31,8 @@ void main() {
   print("Start: $start");
   print("End: $end");
   print("Linear interpolation at t=0.5: ${start.interpolate(end, 0.5)}");
-  print("EaseInQuad interpolation at t=0.5: ${start.interpolate(end, 0.5, Easing.easeInQuad)}");
+  print(
+      "EaseInQuad interpolation at t=0.5: ${start.interpolate(end, 0.5, Easing.easeInQuad)}");
   // ...
 
   // hexA.randomHexInArea(radius)

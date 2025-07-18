@@ -21,15 +21,21 @@ void main() {
         TestSet(Hex(0, 0, 0), Hex(0, 0, 0), 0),
         TestSet(Hex(0, 0, 0), Hex(0, 0, 0).randomNeighbor(), 1),
         TestSet(Hex(2, -2, -0), Hex(2, -2, -0).randomNeighbor(), 1),
-        TestSet(Hex(2, -2, -0), Hex(2, -2, -0).neighbors().first.neighbors().first, 2), // sousede zacinaji vzdy stejnym smerem
+        TestSet(
+            Hex(2, -2, -0),
+            Hex(2, -2, -0).neighbors().first.neighbors().first,
+            2), // sousede zacinaji vzdy stejnym smerem
         TestSet(Hex(-1, -3, 4), Hex(-3, 4, -1), 7),
       ];
       var d = Cube(12, -7, -5);
       for (var i in testSets) {
         // print("Testing $i");
-        expect(cubeDistance(i.a.cube, i.b.cube), equals(i.r), reason: "cubeDistance(${i.a.cube}, ${i.b.cube}) != ${i.r}");
-        expect(cubeDistance(i.a.cube + d, i.b.cube + d), equals(i.r), reason: "cubeDistance(${i.a.cube + d}, ${i.b.cube + d}) != ${i.r}");
-        expect(i.a.distanceTo(i.b), equals(i.r), reason: "${i.a}.distanceTo(${i.b}) != ${i.r}");
+        expect(cubeDistance(i.a.cube, i.b.cube), equals(i.r),
+            reason: "cubeDistance(${i.a.cube}, ${i.b.cube}) != ${i.r}");
+        expect(cubeDistance(i.a.cube + d, i.b.cube + d), equals(i.r),
+            reason: "cubeDistance(${i.a.cube + d}, ${i.b.cube + d}) != ${i.r}");
+        expect(i.a.distanceTo(i.b), equals(i.r),
+            reason: "${i.a}.distanceTo(${i.b}) != ${i.r}");
       }
     });
     test('coordinates', () {
@@ -45,7 +51,8 @@ void main() {
         {
           // POINTY_TOP is default
           var o = h.toOffset();
-          expect(Hex.fromOffset(o, gridLayout: GridLayout.POINTY_TOP), equals(h));
+          expect(
+              Hex.fromOffset(o, gridLayout: GridLayout.POINTY_TOP), equals(h));
         }
         {
           // POINTY_TOP is default
@@ -126,8 +133,11 @@ void main() {
       var t = Hex(-9, 9, 0);
       int minDistance = d.distanceTo(t);
       // "even" hex is wall
-      bool forbiddenHex(Hex h) => h.cube.r.abs() % 2 == 0 && h.cube.q.abs() % 2 == 0;
-      var path = d.cheapestPathTo(t, costFunction: (Hex movingFrom, Hex movingTo) => forbiddenHex(movingTo) ? double.infinity : 1)!;
+      bool forbiddenHex(Hex h) =>
+          h.cube.r.abs() % 2 == 0 && h.cube.q.abs() % 2 == 0;
+      var path = d.cheapestPathTo(t,
+          costFunction: (Hex movingFrom, Hex movingTo) =>
+              forbiddenHex(movingTo) ? double.infinity : 1)!;
       expect(path.path.length, greaterThanOrEqualTo(minDistance + 1));
       for (var o in path.path) {
         expect(forbiddenHex(o), isFalse);
@@ -192,7 +202,9 @@ void main() {
       int distanceToCenter = a.distanceTo(c);
       var wall = c.ring(9);
       bool forbiddenHex(Hex h) => wall.contains(h);
-      var path = a.cheapestPathTo(b, costFunction: (Hex movingFrom, Hex movingTo) => forbiddenHex(movingTo) ? double.infinity : 1)!;
+      var path = a.cheapestPathTo(b,
+          costFunction: (Hex movingFrom, Hex movingTo) =>
+              forbiddenHex(movingTo) ? double.infinity : 1)!;
       for (var o in path.path) {
         expect(forbiddenHex(o), isFalse);
         // we are running in circle around the wall
@@ -205,7 +217,9 @@ void main() {
       var b = Hex(5, -5, 0);
       var wall = c.ring(4);
       bool expensiveHex(Hex h) => wall.contains(h);
-      var path = a.cheapestPathTo(b, costFunction: (Hex movingFrom, Hex movingTo) => expensiveHex(movingTo) ? 100 : 1)!;
+      var path = a.cheapestPathTo(b,
+          costFunction: (Hex movingFrom, Hex movingTo) =>
+              expensiveHex(movingTo) ? 100 : 1)!;
       for (var o in path.path) {
         // mountains can be passed, but are expensive, so should be avoided
         expect(expensiveHex(o), isFalse);
@@ -248,7 +262,9 @@ void main() {
       var wall = c.ring(9);
       bool forbiddenHex(Hex h) => wall.contains(h);
       var path = a.cheapestPathTo(c,
-          maximumDistanceFromTo: 13, costFunction: (Hex movingFrom, Hex movingTo) => forbiddenHex(movingTo) ? double.infinity : 1);
+          maximumDistanceFromTo: 13,
+          costFunction: (Hex movingFrom, Hex movingTo) =>
+              forbiddenHex(movingTo) ? double.infinity : 1);
       expect(path, isNull);
     });
     test('pixelCenters', () {
@@ -280,23 +296,30 @@ void main() {
             // random points within hex
             for (int a = 0; a < 50; a++) {
               double randomAngle = Random().nextDouble() * pi * 2;
-              double randomX = center.x + cos(randomAngle) * inradius * Random().nextDouble();
-              double randomY = center.y + sin(randomAngle) * inradius * Random().nextDouble();
+              double randomX = center.x +
+                  cos(randomAngle) * inradius * Random().nextDouble();
+              double randomY = center.y +
+                  sin(randomAngle) * inradius * Random().nextDouble();
               PixelPoint randomInnerPoint = PixelPoint(randomX, randomY);
-              Hex invert = Hex.fromPixelPoint(randomInnerPoint, size, gridLayout: layout);
+              Hex invert = Hex.fromPixelPoint(randomInnerPoint, size,
+                  gridLayout: layout);
               expect(invert, equals(d));
             }
             // vertices computed with non-zero padding
-            var innerVertices = d.vertices(size, gridLayout: layout, padding: 0.00001);
+            var innerVertices =
+                d.vertices(size, gridLayout: layout, padding: 0.00001);
             for (var innerVertex in innerVertices) {
-              Hex invert = Hex.fromPixelPoint(innerVertex, size, gridLayout: layout);
+              Hex invert =
+                  Hex.fromPixelPoint(innerVertex, size, gridLayout: layout);
               expect(invert, equals(d));
             }
             // center of any pair of vertices should be inside the hex
             for (int a = 0; a < innerVertices.length; a++) {
               for (int b = a + 1; b < innerVertices.length; b++) {
-                PixelPoint centerOfPair = innerVertices[a].centerWith(innerVertices[b]);
-                Hex invert = Hex.fromPixelPoint(centerOfPair, size, gridLayout: layout);
+                PixelPoint centerOfPair =
+                    innerVertices[a].centerWith(innerVertices[b]);
+                Hex invert =
+                    Hex.fromPixelPoint(centerOfPair, size, gridLayout: layout);
                 expect(invert, equals(d));
               }
             }
@@ -322,7 +345,8 @@ void main() {
               expect(vertex.distanceTo(c), closeTo(size, 0.0001));
             }
             for (int a = 0; a < 5; a++) {
-              expect(vertices[a].distanceTo(vertices[a + 1]), closeTo(size, 0.0001));
+              expect(vertices[a].distanceTo(vertices[a + 1]),
+                  closeTo(size, 0.0001));
             }
           }
         }
@@ -362,7 +386,8 @@ void main() {
       var rotated = hexToRotate.rotateAround(nonZeroCenter, 1);
 
       // Verify that distance is preserved
-      expect(hexToRotate.distanceTo(nonZeroCenter), equals(rotated.distanceTo(nonZeroCenter)));
+      expect(hexToRotate.distanceTo(nonZeroCenter),
+          equals(rotated.distanceTo(nonZeroCenter)));
 
       // Verify that rotating 6 times brings us back to the original
       var fullRotation = hexToRotate;
@@ -397,7 +422,8 @@ void main() {
 
       // Test that interpolation preserves the cube constraint (q + r + s = 0)
       var interpolated = start.interpolate(end, 0.3);
-      expect(interpolated.cube.q + interpolated.cube.r + interpolated.cube.s, equals(0));
+      expect(interpolated.cube.q + interpolated.cube.r + interpolated.cube.s,
+          equals(0));
     });
   });
 }

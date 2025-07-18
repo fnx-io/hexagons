@@ -10,7 +10,8 @@ double _lerp(num a, num b, double t) {
 /// Distance of two cubes in "steps".
 int cubeDistance(Cube a, Cube b) {
   if (a == b) return 0;
-  return ((a.q - b.q).abs() + (a.r - b.r).abs() + (a.s - b.s).abs()) >> 1; // ~/2
+  return ((a.q - b.q).abs() + (a.r - b.r).abs() + (a.s - b.s).abs()) >>
+      1; // ~/2
 }
 
 /// Linear interpolation between two cubes.

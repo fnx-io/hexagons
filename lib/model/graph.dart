@@ -1,6 +1,7 @@
 part of '../hex_toolkit.dart';
 
-List<List<T>> _connectedClustersOfNodes<T>(Iterable<T> candidates, bool Function(T, T) areConnected) {
+List<List<T>> _connectedClustersOfNodes<T>(
+    Iterable<T> candidates, bool Function(T, T) areConnected) {
   List<List<T>> clusters = [];
   Set<T> visited = {};
 
@@ -29,7 +30,8 @@ List<List<T>> _connectedClustersOfNodes<T>(Iterable<T> candidates, bool Function
 }
 
 List<List<Hex>> connectedClusters(Iterable<Hex> candidates) {
-  return _connectedClustersOfNodes(candidates, (Hex a, Hex b) => a.distanceTo(b) <= 1);
+  return _connectedClustersOfNodes(
+      candidates, (Hex a, Hex b) => a.distanceTo(b) <= 1);
 }
 
 int areaHeight(Iterable<Hex> area) {

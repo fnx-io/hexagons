@@ -1,3 +1,7 @@
+## 1.0.2
+
+* homage to the gods of formating
+
 ## 1.0.1
 
 * homage to the gods of linting

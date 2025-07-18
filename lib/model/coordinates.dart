@@ -41,7 +41,11 @@ class GridOffset {
 
   @override
   bool operator ==(Object other) =>
-      identical(this, other) || other is GridOffset && runtimeType == other.runtimeType && q == other.q && r == other.r;
+      identical(this, other) ||
+      other is GridOffset &&
+          runtimeType == other.runtimeType &&
+          q == other.q &&
+          r == other.r;
 
   @override
   int get hashCode => q.hashCode ^ r.hashCode;
@@ -65,7 +69,9 @@ class Cube {
 
   Cube.fromAxial(int q, int r) : this(q, r, -q - r);
 
-  factory Cube.fromGridOffset(GridOffset o, [GridLayout gridLayout = GridLayout.POINTY_TOP]) => o.toCube(gridLayout: gridLayout);
+  factory Cube.fromGridOffset(GridOffset o,
+          [GridLayout gridLayout = GridLayout.POINTY_TOP]) =>
+      o.toCube(gridLayout: gridLayout);
 
   /// Converts this cube to an [GridOffset] coordinate, using the given [GridLayout].
   GridOffset toGridOffset([GridLayout gridLayout = GridLayout.POINTY_TOP]) {
@@ -90,7 +96,8 @@ class Cube {
     }
   }
 
-  PixelPoint centerPoint(double size, [GridLayout gridLayout = GridLayout.POINTY_TOP]) {
+  PixelPoint centerPoint(double size,
+      [GridLayout gridLayout = GridLayout.POINTY_TOP]) {
     if (gridLayout == GridLayout.POINTY_TOP) {
       var x = size * (_sqrt3 * q + _sqrt3_2 * r);
       var y = size * (3 / 2 * r);
@@ -118,7 +125,12 @@ class Cube {
 
   @override
   bool operator ==(Object other) =>
-      identical(this, other) || other is Cube && runtimeType == other.runtimeType && q == other.q && r == other.r && s == other.s;
+      identical(this, other) ||
+      other is Cube &&
+          runtimeType == other.runtimeType &&
+          q == other.q &&
+          r == other.r &&
+          s == other.s;
 
   @override
   int get hashCode => q.hashCode ^ r.hashCode ^ s.hashCode;
