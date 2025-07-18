@@ -1,3 +1,8 @@
+## 1.0.0
+
+* support for Dart > 3
+* new `rotateAround` and `interpolate` methods
+
 ## 0.4.0
 
 * BREAKING: most methods now return Interable, not List

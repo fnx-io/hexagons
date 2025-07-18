@@ -225,6 +225,52 @@ class Hex {
     }
   }
 
+  /// Rotates this hex around the given center hex by the specified number of steps.
+  /// Each step is a 60-degree rotation clockwise.
+  /// Returns a new Hex instance.
+  Hex rotateAround(Hex center, int steps) {
+    // Normalize steps to 0-5 range
+    steps = steps % 6;
+    if (steps == 0) return this;
+
+    // Convert to relative coordinates
+    var rel = this.cube - center.cube;
+
+    // Apply rotation
+    Cube rotated;
+    switch (steps) {
+      case 1:
+        rotated = Cube(-rel.r, -rel.s, -rel.q);
+        break;
+      case 2:
+        rotated = Cube(rel.s, rel.q, rel.r);
+        break;
+      case 3:
+        rotated = Cube(-rel.q, -rel.r, -rel.s);
+        break;
+      case 4:
+        rotated = Cube(rel.r, rel.s, rel.q);
+        break;
+      case 5:
+        rotated = Cube(-rel.s, -rel.q, -rel.r);
+        break;
+      default:
+        rotated = rel;
+    }
+
+    // Convert back to absolute coordinates
+    return Hex.fromCube(center.cube + rotated);
+  }
+
+  /// Interpolates between this hex and the target hex using the specified easing function.
+  /// The parameter t should be between 0 and 1, where 0 returns this hex and 1 returns the target hex.
+  /// Returns a new Hex instance.
+  Hex interpolate(Hex target, double t, [EasingFunction easing = Easing.linear]) {
+    assert(t >= 0 && t <= 1);
+    double easedT = easing(t);
+    return Hex.fromCube(cubeLerp(this.cube, target.cube, easedT));
+  }
+
   @override
   bool operator ==(Object other) => identical(this, other) || other is Hex && runtimeType == other.runtimeType && cube == other.cube;
 

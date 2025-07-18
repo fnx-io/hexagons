@@ -327,6 +327,77 @@ void main() {
         }
       }
     });
+
+    test('rotateAround', () {
+      var center = Hex.zero();
+      var hex = Hex(3, 0, -3);
+
+      // Test rotation by 0 steps (no change)
+      expect(hex.rotateAround(center, 0), equals(hex));
+
+      // Test rotation by 1 step (60 degrees)
+      expect(hex.rotateAround(center, 1), equals(Hex(0, 3, -3)));
+
+      // Test rotation by 2 steps (120 degrees)
+      expect(hex.rotateAround(center, 2), equals(Hex(-3, 3, 0)));
+
+      // Test rotation by 3 steps (180 degrees)
+      expect(hex.rotateAround(center, 3), equals(Hex(-3, 0, 3)));
+
+      // Test rotation by 4 steps (240 degrees)
+      expect(hex.rotateAround(center, 4), equals(Hex(0, -3, 3)));
+
+      // Test rotation by 5 steps (300 degrees)
+      expect(hex.rotateAround(center, 5), equals(Hex(3, -3, 0)));
+
+      // Test rotation by 6 steps (360 degrees, back to original)
+      expect(hex.rotateAround(center, 6), equals(hex));
+
+      // Test rotation with non-zero center
+      var nonZeroCenter = Hex(1, 1, -2);
+      var hexToRotate = Hex(4, 1, -5);
+
+      // Rotate by 1 step
+      var rotated = hexToRotate.rotateAround(nonZeroCenter, 1);
+
+      // Verify that distance is preserved
+      expect(hexToRotate.distanceTo(nonZeroCenter), equals(rotated.distanceTo(nonZeroCenter)));
+
+      // Verify that rotating 6 times brings us back to the original
+      var fullRotation = hexToRotate;
+      for (int i = 0; i < 6; i++) {
+        fullRotation = fullRotation.rotateAround(nonZeroCenter, 1);
+      }
+      expect(fullRotation, equals(hexToRotate));
+    });
+
+    test('interpolate', () {
+      var start = Hex.zero();
+      var end = Hex(6, 0, -6);
+
+      // Test t = 0 (should be start)
+      expect(start.interpolate(end, 0), equals(start));
+
+      // Test t = 1 (should be end)
+      expect(start.interpolate(end, 1), equals(end));
+
+      // Test t = 0.5 (should be halfway)
+      expect(start.interpolate(end, 0.5), equals(Hex(3, 0, -3)));
+
+      // Test with different easing functions
+      var quarter = start.interpolate(end, 0.5, Easing.easeInQuad);
+      var threeQuarters = start.interpolate(end, 0.5, Easing.easeOutQuad);
+
+      // easeInQuad should be less than linear at t=0.5
+      expect(quarter.distanceTo(start), lessThan(3));
+
+      // easeOutQuad should be more than linear at t=0.5
+      expect(threeQuarters.distanceTo(start), greaterThan(3));
+
+      // Test that interpolation preserves the cube constraint (q + r + s = 0)
+      var interpolated = start.interpolate(end, 0.3);
+      expect(interpolated.cube.q + interpolated.cube.r + interpolated.cube.s, equals(0));
+    });
   });
 }
 

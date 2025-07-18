@@ -55,4 +55,20 @@ class HexPath {
   /// Returns moving window of segments of defined size. With path a,b,c,d,e and segmentSize 3, this method returns: [[a,b,c], [b,c,d], [c,d,e]]. If the segments size is
   /// bigger then the path length, the method returns the whole path as a one segment.
   Iterable<Iterable<Hex>> segments({int segmentSize = 2}) => segmentsIterator(path, segmentSize);
+
+  String toString() {
+    return 'HexPath(from: $from, to: $to, totalCost: $totalCost, path: ${path.join(', ')})';
+  }
+}
+
+/// Function type for easing functions
+typedef EasingFunction = double Function(double t);
+
+/// Common easing functions
+class Easing {
+  static double linear(double t) => t;
+  static double easeInQuad(double t) => t * t;
+  static double easeOutQuad(double t) => t * (2 - t);
+  static double easeInOutQuad(double t) => t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+  // More easing functions could be added
 }

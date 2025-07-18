@@ -1,11 +1,11 @@
 name: hex_toolkit
 description: Zero dependencies + framework agnostic Hex grid toolkit. Use with Flutter, on Web, on CLI, or anywhere Dart runs.
-version: 0.4.1
+version: 1.0.0
 homepage: https://github.com/fnx-io/hexagons
 issue_tracker: https://github.com/fnx-io/hexagons/issues
 
 environment:
-  sdk: '>=2.16.0 <3.0.0'
+  sdk: '>=2.16.0 <4.0.0'
 
 dev_dependencies:
   lints: ^2.0.0
