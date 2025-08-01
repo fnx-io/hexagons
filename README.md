@@ -109,11 +109,49 @@ Iterable<Hex> toDraw() sync* {
 }
 ```
 
-
-## Glory to Hexagons!
-
 ![Hexagons](https://raw.githubusercontent.com/fnx-io/hexagons/refs/heads/master/demo.png)
 
-... this "world generator" is not part of the library, but it's something you can easily whip out with this toolkit.
+## Flame Integration
+
+I'm no Flame expert, but it looks pretty straightforward too:
+
+```dart
+import 'dart:math';
+
+import 'package:flame/components.dart';
+import 'package:hex_toolkit/hex_toolkit.dart';
+
+const sprites = ["clay.png", "desert.png", "ore.png", "sheep.png", "wheat.png"];
+
+// Simple component that adds hex to Flame ecosystem.
+class HexComponent extends SpriteComponent {
+  static const hexRadius = 128.0;
+
+  final Hex hex;
+
+  static final Random rnd = Random();
+
+  HexComponent(this.hex) : super(anchor: Anchor.center) {
+    position = hex.centerPoint(hexRadius).toVector2();
+  }
+
+  @override
+  Future<void> onLoad() async {
+    await super.onLoad();
+    sprite = await Sprite.load("hex/" + sprites[rnd.nextInt(sprites.length)]);
+    bleed = 1.0;
+  }
+}
+
+// Extension to convert PixelPoint from hex_toolkit to Vector2 from Flame.
+extension HexToFlame on PixelPoint {
+  Vector2 toVector2() {
+    return Vector2(x.toDouble(), y.toDouble());
+  }
+}
+
+```
+
+<img src="https://raw.githubusercontent.com/fnx-io/hexagons/refs/heads/master/flame.jpg" alt="Flame" width="300">
 
 Once again, thanks to https://www.redblobgames.com/grids/hexagons/ for the inspiration.

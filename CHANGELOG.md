@@ -1,3 +1,7 @@
+## 1.0.4
+
+* Flame example
+
 ## 1.0.3
 
 * minor docs tweaks
