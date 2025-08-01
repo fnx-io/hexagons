@@ -154,7 +154,7 @@ extension HexToFlame on PixelPoint {
 
 <img src="https://raw.githubusercontent.com/fnx-io/hexagons/refs/heads/master/flame.jpg" alt="Flame" width="300">
 
-Exmaple hex tiles are taken from https://opengameart.org/content/settlers-kit
+Example hex tiles are taken from https://opengameart.org/content/settlers-kit
 
 ## Shoutout
 
